@@ -15,7 +15,12 @@
 #include <list>
 #include <fstream>
 #include <cstring>
+#include "functions.h"
 
+
+#define MAX_NUM_VERTICES      500
+/*The maximum line size is equal to max num vertices * 2 + a space character + \n character. */
+#define MAX_LINE_SIZE         (MAX_NUM_VERTICES * 2) + 1 + 1
 #define ERROR_READING_FILE    1
 
 typedef unsigned char BYTE;
