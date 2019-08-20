@@ -18,7 +18,7 @@ Grafos::Grafos(std::string fileName)
   /*Auxiliar variables*/
   std::string auxiliar;
   std::ifstream file;
-  std::tuple <std::string, std::string> auxVertices;
+  std::string auxVertice1, auxVertice2;
   int index;
 
   file.open(fileName);
@@ -34,11 +34,23 @@ Grafos::Grafos(std::string fileName)
   std::getline (file, auxiliar);
   numberVertices = std::stoi (auxiliar);
 
+
+  /*input = fopen("./as_graph.txt", "r");
+    if(input) {
+        fscanf(input, "%d\n", &numVertex);
+        while (fscanf(input, "%d %d \n",&verticeOrigem, &verticeDestino) != EOF) {
+          int vertice[2] = {verticeOrigem,verticeDestino};
+          vertices.push_back(vertice);
+          numEdges ++;
+        }
+    }*/
+
   while (!file.eof())
   {
     /*Reading the edges. format: "Edge1 Edge2"*/
-    std::getline (file, auxiliar);
-    auxVertices = SplitString (auxiliar, ' ');
+    fscanf(file, "%d %d\n", &auxVertice1, &auxVertice2);
+    auxVertice1 = std::stoi (auxVertice1)
+    auxVertice2 = std::stoi (auxVertice2)
 
     /*if vector of linked lists is empty:
      - Create a linked list for each of the vertices read
@@ -47,12 +59,12 @@ Grafos::Grafos(std::string fileName)
     if (vectorGraph.empty())
     {
 
-      linkedList1.push_back (std::stoi (std::get<0>(auxVertices)));
-      linkedList1.push_back (std::stoi (std::get<1>(auxVertices)));
+      linkedList1.push_back (auxVertice1);
+      linkedList1.push_back (auxVertice2);
       vectorGraph.push_back (linkedList1);
 
-      linkedList2.push_back (std::stoi (std::get<1>(auxVertices)));
-      linkedList2.push_back (std::stoi (std::get<0>(auxVertices)));
+      linkedList2.push_back (auxVertice2);
+      linkedList2.push_back (auxVertice1);
       vectorGraph.push_back (linkedList2);
 
       linkedList1.clear();
@@ -71,20 +83,19 @@ Grafos::Grafos(std::string fileName)
 
       switch(list.front())
       {
-        case std::get<0>(auxVertices) :
-          list.push_back (std::get<1>(auxVertices));
+        case auxVertice1 :
+          list.push_back (auxVertice2);
           break;
-        case std::get<1>(auxVertices) :
-          list.push_back (std::get<0>(auxVertices));
+        case auxVertice2 :
+          list.push_back (auxVertice1);
           break;
         default:
-          // if (list.front() = list.end())
-
+        /*Pensei em botar booleans pra verificar se o swith encontrou os dois cases, pq, caso contrário
+         *precisamos criar uma lista encadeada nova, já que isso significa que o vértice é novo!
+         */
       }
 
     }
-
-
     numberEdges ++;
   }
 
