@@ -30,7 +30,7 @@ class Grafos
 
 public:
   Grafos(std::string);
-
+  std::vector<std::list<int>> CriarLista (std::string fileName, int *numberVertices, int *numberEdges);
 };
 
 #endif
