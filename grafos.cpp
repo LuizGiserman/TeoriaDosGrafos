@@ -5,13 +5,16 @@
 */
 
 #include "grafos.h"
+#include <bitset>
+
+using namespace std;
 
 /*Constructor function*/
 Grafos::Grafos(std::string fileName)
 {
-
-  std::vector<BYTE> adjacencyMatrix;
-  int numberVertices, numberEdges = 0;
+    
+   std::vector<BYTE> adjacencyMatrix;
+   int numberVertices, numberEdges = 0;
 
 
 };
@@ -86,4 +89,39 @@ std::vector<std::list<int>> Grafos::CriarLista (std::string fileName, int *numbe
 
     file.close();
     return vectorGraph;
+}
+
+vector<vector<bitset<1>>> Grafos::Matrix(std::string fileName)
+{
+    int numVertices;
+    int numEdges;
+    int auxVertice1;
+    int auxVertice2;
+    std::ifstream file;
+
+    file.open(fileName);
+    /*Treating the open file function*/
+    if (!file && !(file.is_open()))
+    {
+        std::cout << "Unable to open file" << std::endl;
+        std::cout << "Error #" << errno << ": " << strerror (errno) << std::endl;
+        exit (ERROR_READING_FILE);
+    }
+
+    /*Getting the first line, which contains the info for the number of vertices*/
+    file >> numVertices;
+    
+    vector<vector<bitset<1>>> matrix(numVertices,std::vector<bitset<1>>(numVertices));
+
+    /*Reading the edges. format: "Vertice1 Vertice2"*/
+    while (file >> auxVertice1 >> auxVertice2)
+    {
+        matrix[auxVertice1][auxVertice2].set();
+        matrix[auxVertice1][auxVertice2].set();
+        numEdges ++;
+    }
+
+    file.close();
+
+    return matrix;
 }

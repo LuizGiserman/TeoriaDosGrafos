@@ -25,12 +25,18 @@
 
 typedef unsigned char BYTE;
 
+using namespace std;
+
+
 class Grafos
 {
 
 public:
   Grafos(std::string);
   std::vector<std::list<int>> CriarLista (std::string fileName, int *numberVertices, int *numberEdges);
+  vector<vector<bitset<1>>> Matrix(std::string fileName);
+  int numVertices;
+  vector<vector<int>> matrix;
 };
 
 #endif
