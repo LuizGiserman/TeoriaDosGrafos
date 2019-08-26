@@ -12,6 +12,7 @@
 #include <string>
 #include <cerrno>
 #include <vector>
+#include <bitset>
 #include <list>
 #include <fstream>
 #include <cstring>
@@ -32,11 +33,33 @@ class Grafos
 {
 
 public:
-  Grafos(std::string);
-  std::vector<std::list<int>> CriarLista (std::string fileName, int *numberVertices, int *numberEdges);
-  vector<vector<bitset<1>>> Matrix(std::string fileName);
+  Grafos(string, int type);
+  string filename;
+  int type;
   int numVertices;
-  vector<vector<int>> matrix;
+  int numEdges;
+  bitset<1>** matrix;
+  int maxDegree;
+  int minDegree;
+  int avgDegree;
+  int medDegree;
+
+  std::vector<std::list<int>> CriarLista (std::string fileName, int *numberVertices, int *numberEdges);
+  bitset<1> **generateSquareMatrix(int rows);
+  void Matrix();
+  void List();
+  void Print();
+  void PrintInformation();
+  void BFS(int initialVertice);
+
+private:
+  void BFSMatrix(int initialVertice);
+  void BFSList(int initialVertice);
+  void PrintMatrix();
+  void PrintList();
+  void getInformationMatrix();
+  void getInformationList();
+
 };
 
 #endif
