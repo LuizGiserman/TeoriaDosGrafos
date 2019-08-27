@@ -10,8 +10,8 @@
 using namespace std;
 
 /*Constructor function*/
-Grafos::Grafos(std::string fileName, int type){   
-    
+Grafos::Grafos(std::string fileName, int type){
+
     this->filename = fileName;
 
     // if 0 is an Adjacency List, if 1 is a Adjacency Matrix
@@ -21,16 +21,16 @@ Grafos::Grafos(std::string fileName, int type){
         Grafos::List();
      } else if(type == 1){
         Grafos::Matrix();
-     }  
+     }
 };
 
 /* Print function, just for test it the constructor is okay */
-void Grafos::Print(){   
+void Grafos::Print(){
     if(type == 0){
         Grafos::PrintList();
      } else if(type == 1){
         Grafos::PrintMatrix();
-     }  
+     }
 };
 
 /* Print Informations function */
@@ -40,7 +40,7 @@ void Grafos::Print(){
         Grafos::getInformationList();
      } else if(type == 1){
         Grafos::getInformationMatrix();
-     }  
+     }
 
      ofstream file;
 
@@ -67,11 +67,23 @@ void Grafos::Print(){
      }
  }
 
-
-std::vector<std::list<int>> Grafos::CriarLista (std::string fileName, int *numberVertices, int *numberEdges)
+std::list<int> *Grafos::AllocateVectorOfLists()
 {
-    std::vector<std::list<int>> vectorGraph;
+  std::list<int> *vectorGraph = new std::list<int> [numEdges];
+  unsigned index ;
+  std::list<int> list;
+  list.push_back(-1);
 
+  for (index = 0; index < numEdges; index++)
+    vectorGraph[index] = list;
+  // for (auto& list : vectorGraph)
+  //   list = NULL;
+  return vectorGraph;
+}
+
+void Grafos::List ()
+{
+    std::list<int> *vectorGraph;
     /*Auxiliar variables*/
     std::list<int> linkedList1, linkedList2;
     std::string auxiliar;
@@ -79,7 +91,7 @@ std::vector<std::list<int>> Grafos::CriarLista (std::string fileName, int *numbe
     int auxVertice1, auxVertice2;
     int index;
 
-    file.open(fileName);
+    file.open(filename);
     /*Treating the open file function*/
     if (!file && !(file.is_open()))
     {
@@ -89,55 +101,47 @@ std::vector<std::list<int>> Grafos::CriarLista (std::string fileName, int *numbe
     }
 
     /*Getting the first line, which contains the info for the number of vertices*/
-    file >> *numberVertices;
+    file >> numVertices;
+
+    /*Allocating memory for the array of lists and setting all positions to NULL*/
+    vectorGraph = AllocateVectorOfLists();
 
     /*Reading the edges. format: "Edge1 Edge2"*/
     while (file >> auxVertice1 >> auxVertice2)
     {
 
-        /*if vector of linked lists is empty:
-        - Create a linked list for each of the vertices read
-        - Add the other vertice to the list.
-        */
-        if (vectorGraph.empty())
+        /*Check if the vertice is already in the list (its position would be the same as its "name" (number or index) )*/
+        /*If it isn't there, create a linked list adding its corresponding vertice to the front and the other one to the end
+         * The list will be stored at the corresponding position (index or number) vector[verticeNumber]
+         */
+        if (vectorGraph[auxVertice1].front() == -1)
         {
-
-            linkedList1.push_back (auxVertice1);
-            linkedList1.push_back (auxVertice2);
-            vectorGraph.push_back (linkedList1);
-
-            linkedList2.push_back (auxVertice2);
-            linkedList2.push_back (auxVertice1);
-            vectorGraph.push_back (linkedList2);
-
-            linkedList1.clear();
-            linkedList2.clear();
-
+          linkedList1.push_back (auxVertice1);
+          linkedList1.push_back (auxVertice2);
+          vectorGraph[auxVertice1] = linkedList1;
+          linkedList1.clear();
         }
+        /*If it is there, then just add the other one to the end of the already existing linked list at vector[verticeNumber]*/
+        else
+          vectorGraph[auxVertice1].push_back(auxVertice2);
 
-        /*check if vertice 1 is in the vector of linked lists.
-        * If not, create a Linked list to add it to the vector (and add std::get<1>(auxVertices) to the list)
-        *
-        * Do the same with vertice 2 but add std::get<0>(auxVertices) instead
-        */
-
-        for (auto &list : vectorGraph)
+        /*Do the same for the other vertice*/
+        if (vectorGraph[auxVertice2].front() == -1)
         {
-
-            if (list.front() == auxVertice1)
-                list.push_back (auxVertice2);
-            else if (list.front() == auxVertice2)
-                list.push_back (auxVertice1);
-            /*Pensei em botar booleans pra verificar se o swith encontrou os dois cases, pq, caso contrário
-            *precisamos criar uma lista encadeada nova, já que isso significa que o vértice é novo!
-            */
+          linkedList1.push_back (auxVertice2);
+          linkedList1.push_back (auxVertice1);
+          vectorGraph[auxVertice2] = linkedList1;
+          linkedList1.clear();
         }
+        else
+          vectorGraph[auxVertice2].push_back(auxVertice1);
+
+        /*Every line of the file represents an adge*/
+        numEdges ++;
 
     }
-        numberEdges ++;
-
     file.close();
-    return vectorGraph;
+    this -> vectorGraph = vectorGraph;
 }
 
 bitset<1> **Grafos::generateSquareMatrix(int rows){
@@ -157,6 +161,7 @@ void Grafos::Matrix()
     int auxVertice1;
     int auxVertice2;
     std::ifstream file;
+    bitset<1>** matrix;
 
     file.open(filename);
     /*Treating the open file function*/
@@ -169,8 +174,8 @@ void Grafos::Matrix()
 
     /*Getting the first line, which contains the info for the number of vertices*/
     file >> numVertices;
-    
-    bitset<1>** matrix = generateSquareMatrix(numVertices);
+
+    matrix = generateSquareMatrix(numVertices);
 
     /*Reading the edges. format: "Vertice1 Vertice2"*/
     while (file >> auxVertice1 >> auxVertice2)
@@ -186,11 +191,11 @@ void Grafos::Matrix()
     this -> numVertices = numVertices;
     this -> numEdges = numEdges;
 }
- 
+
  void Grafos::PrintMatrix(){
      for(int i = 0; i < numVertices; ++i){
          for(int j = 0; j < numVertices; ++j ){
-             cout << matrix[i][j] << " "; 
+             cout << matrix[i][j] << " ";
          }
          cout << endl;
      }
@@ -205,7 +210,7 @@ void Grafos::Matrix()
          for(int j = actualVertice; j < numVertices; ++j ){
             if(matrix[i][j] == 1){
                 Degree++;
-            } 
+            }
          }
         totalDegrees += Degree;
         Degrees.push_back(Degree);
@@ -227,7 +232,7 @@ void Grafos::Matrix()
      this->minDegree = Degrees.front();
      this->maxDegree = Degrees.back();
      this->medDegree = totalDegrees/numVertices;
-     
+
  }
 
 
@@ -241,7 +246,7 @@ void Grafos::BFSMatrix(int initialVertice)
     }
 
     vertices[initialVertice][0] = 0; // initialVertice marked
-    vertices[initialVertice][0] = 0; // root 
+    vertices[initialVertice][0] = 0; // root
     vertices[initialVertice][0] = 0; // no father
 
     vector<int> Queue; // Queue Created

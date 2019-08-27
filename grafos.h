@@ -16,7 +16,6 @@
 #include <list>
 #include <fstream>
 #include <cstring>
-#include "functions.h"
 
 
 #define MAX_NUM_VERTICES      500
@@ -39,18 +38,21 @@ public:
   int numVertices;
   int numEdges;
   bitset<1>** matrix;
+  std::list<int> *vectorGraph;
   int maxDegree;
   int minDegree;
   int avgDegree;
   int medDegree;
 
-  std::vector<std::list<int>> CriarLista (std::string fileName, int *numberVertices, int *numberEdges);
   bitset<1> **generateSquareMatrix(int rows);
   void Matrix();
-  void List();
+  void List ();
   void Print();
   void PrintInformation();
   void BFS(int initialVertice);
+
+  std::list<int> *AllocateVectorOfLists();
+
 
 private:
   void BFSMatrix(int initialVertice);
