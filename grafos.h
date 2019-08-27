@@ -27,6 +27,26 @@ typedef unsigned char BYTE;
 
 using namespace std;
 
+struct Verticedata {
+  union {
+      bitset<1>* Row;
+      list<int>* List;
+    };
+};
+
+class Vertice
+{ 
+    int type;
+    Verticedata vertice;
+
+  public:
+    Vertice(int type, int size = 0);
+    void setVertice(int Vertice);
+    void getVertice();
+    bool hasEdge(int Vertice);
+    bitset<1>* getVerticeMatrix();
+    list<int>* getVerticeList();
+};
 
 class Grafos
 {
@@ -55,6 +75,10 @@ public:
 
 
 private:
+  void setVerticeMatrix(int Vertice1, int Vertice2);
+  void getVerticeMatrix(int Vertice);
+  void getVerticeList(int Vertice1, int Vertice2);
+  void getVerticeList(int Vertice);
   void BFSMatrix(int initialVertice);
   void BFSList(int initialVertice);
   void PrintMatrix();

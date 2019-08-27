@@ -9,6 +9,64 @@
 
 using namespace std;
 
+
+Vertice::Vertice(int type, int size = 0){
+
+  this->type = type;
+
+  if ( type == 0){
+      this->vertice.List = new list<int>;
+  } else if (type == 1){
+      this->vertice.Row = new bitset<1> [size];
+  }
+}
+
+void Vertice::setVertice(int Vertice){
+
+    if ( type == 0){
+      vertice.List->push_back(Vertice);
+  } else if (type == 1){
+      vertice.Row[Vertice].set();
+  }
+}
+
+void Vertice::getVertice(){
+
+    if ( type == 0){
+      getVerticeList();
+  } else if (type == 1){
+      getVerticeMatrix();
+  }
+}
+
+list<int>* Vertice::getVerticeList(){
+    return vertice.List;
+}
+
+bitset<1>* Vertice::getVerticeMatrix(){
+    return vertice.Row;
+    
+}
+
+bool Vertice::hasEdge(int Vertice){
+
+    if ( type == 0){
+        list<int>::iterator it;
+        it = find(vertice.List->begin(),vertice.List->end(),Vertice);
+        if (it != vertice.List->end()){
+            return true;
+        } else {
+            return false;
+        };
+    } else if (type == 1){
+        if (vertice.Row[Vertice] == 1){
+            return true;
+        } else {
+            return false;
+        };
+  };
+};
+
 /*Constructor function*/
 Grafos::Grafos(std::string fileName, int type){
 
