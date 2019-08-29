@@ -35,7 +35,7 @@ struct Verticedata {
 };
 
 class Vertice
-{ 
+{
     int type;
     Verticedata vertice;
 
@@ -56,9 +56,9 @@ public:
   string filename;
   int type;
   int numVertices;
-  int numEdges;
+  int numEdges = 0;
   bitset<1>** matrix;
-  std::list<int> *vectorGraph;
+  std::list<int> *vectorGraph = NULL;
   int maxDegree;
   int minDegree;
   int avgDegree;
@@ -71,7 +71,7 @@ public:
   void PrintInformation();
   void BFS(int initialVertice);
 
-  std::list<int> *AllocateVectorOfLists();
+  void AllocateVectorOfLists();
 
 
 private:
