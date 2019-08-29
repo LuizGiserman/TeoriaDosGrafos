@@ -57,6 +57,7 @@ public:
   int type;
   int numVertices;
   int numEdges;
+  Vertice** grafo;
   bitset<1>** matrix;
   std::list<int> *vectorGraph;
   int maxDegree;
@@ -64,27 +65,24 @@ public:
   int avgDegree;
   int medDegree;
 
-  bitset<1> **generateSquareMatrix(int rows);
-  void Matrix();
-  void List ();
+  void createGrafo(int rows);
+  void Populate();
   void Print();
+  int Edges(int Vertice);
+  void getInformation();
   void PrintInformation();
   void BFS(int initialVertice);
 
-  std::list<int> *AllocateVectorOfLists();
-
 
 private:
-  void setVerticeMatrix(int Vertice1, int Vertice2);
-  void getVerticeMatrix(int Vertice);
-  void getVerticeList(int Vertice1, int Vertice2);
-  void getVerticeList(int Vertice);
   void BFSMatrix(int initialVertice);
   void BFSList(int initialVertice);
   void PrintMatrix();
   void PrintList();
+  /*
   void getInformationMatrix();
   void getInformationList();
+  */
 
 };
 
