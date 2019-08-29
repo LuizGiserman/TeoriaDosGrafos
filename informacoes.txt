@@ -1,5 +1,5 @@
 Numero de Vertices: 5
-Numero de Arestas: 32770
+Numero de Arestas: 6
 Grau Médio: 3
 Grau Maximo: 3
 Grau Minimo: 2

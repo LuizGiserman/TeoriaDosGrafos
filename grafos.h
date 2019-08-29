@@ -69,7 +69,6 @@ public:
   void Populate();
   void Print();
   int Edges(int Vertice);
-  void getInformation();
   void PrintInformation();
   void BFS(int initialVertice);
 
@@ -77,13 +76,9 @@ public:
 private:
   void BFSMatrix(int initialVertice);
   void BFSList(int initialVertice);
+  void GetInformation();
   void PrintMatrix();
   void PrintList();
-  /*
-  void getInformationMatrix();
-  void getInformationList();
-  */
-
 };
 
 #endif

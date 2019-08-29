@@ -6,6 +6,14 @@
 #include <algorithm>
 #include "grafos.h"
 #include <bitset>
+#include <iostream>
+#include <string>
+#include <cerrno>
+#include <vector>
+#include <bitset>
+#include <list>
+#include <fstream>
+#include <cstring>
 
 using namespace std;
 
@@ -56,16 +64,17 @@ bool Vertice::hasEdge(int Vertice){
         it = find(vertice.List->begin(),vertice.List->end(),Vertice);
         if (it != vertice.List->end()){
             return true;
-        } else {
-            return false;
-        };
+        } 
+            
+        return false;
+
     } else if (type == 1){
         if (vertice.Row[Vertice - 1] == 1){
             return true;
-        } else {
-            return false;
-        };
-  };
+        }
+    }
+        
+        return false;
 };
 
 
@@ -90,14 +99,9 @@ void Grafos::Print(){
 };
 
 /* Print Informations function */
-/*
  void Grafos::PrintInformation(){
 
-     if(type == 0){
-        Grafos::getInformationList();
-     } else if(type == 1){
-        Grafos::getInformationMatrix();
-     }
+    Grafos::GetInformation();
 
      ofstream file;
 
@@ -112,8 +116,28 @@ void Grafos::Print(){
      }
      file.close();
 
- }
-*/
+ };
+
+
+int Grafos::Edges(int Vertice){
+    int numEdges = 0;
+    if ( type == 1){
+         bitset<1>* Row;
+         Row = grafo[Vertice]->getVerticeMatrix();
+         for(int j = 0; j < numVertices; ++j ){
+             if(Row[j] == 1){
+                 numEdges++;
+             }
+         }
+    } else if (type == 0){
+        list<int>* List;
+         List = grafo[Vertice]->getVerticeList();
+         for(list<int>::iterator i = List->begin(); i != List->end(); ++i ){
+             numEdges++;
+         }
+    }
+    return numEdges;
+};
 
  void Grafos::BFS(int initialVertice)
  {
@@ -161,7 +185,6 @@ void Grafos::Populate()
     /*Reading the edges. format: "Vertice1 Vertice2"*/
     while (file >> auxVertice1 >> auxVertice2)
     {
-
         grafo[auxVertice1-1]->setVertice(auxVertice2);
         grafo[auxVertice2-1]->setVertice(auxVertice1);
         numEdges ++;
@@ -169,7 +192,6 @@ void Grafos::Populate()
 
     file.close();
 
-    this -> grafo = grafo;
     this -> numVertices = numVertices;
     this -> numEdges = numEdges;
 }
@@ -198,32 +220,17 @@ void Grafos::Populate()
      }
  }
 
- int Grafos::Edges(int Vertice){
-    int numEdges = 0;
-    if ( type == 0){
-         bitset<1>* Row;
-         Row = grafo[Vertice]->getVerticeMatrix();
-         for(int j = 0; j < numVertices; ++j ){
-             numEdges++;
-         }
-    } else if (type == 1){
-        list<int>* List;
-         List = grafo[Vertice]->getVerticeList();
-         for(list<int>::iterator i = List->begin(); i != List->end(); ++i ){
-             numEdges++;
-         }
-    return numEdges;
-}
 
- void Grafos::getInformation(){
-     vector<int> Degrees;
-     int totalDegrees = 0;
-     int actualVertice = 0;
-     for(int i = actualVertice; i < numVertices; ++i ){
-        int Degree = grafo.Edges(i);
+void Grafos::GetInformation() {
+    vector<int> Degrees;
+    int Degree;
+    int totalDegrees = 0;
+    int actualVertice = 0;
+    for(int i = actualVertice; i < numVertices; ++i ){
+        Degree = Edges(i);
         totalDegrees += Degree;
         Degrees.push_back(Degree);
-     }
+    }
 
      sort(Degrees.begin(),Degrees.end());
 
@@ -242,7 +249,7 @@ void Grafos::Populate()
      this->maxDegree = Degrees.back();
      this->medDegree = totalDegrees/numVertices;
 
- }
+};
 
 
 void Grafos::BFSMatrix(int initialVertice)
