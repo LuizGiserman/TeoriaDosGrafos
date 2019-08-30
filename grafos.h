@@ -16,9 +16,10 @@
 #include <list>
 #include <fstream>
 #include <cstring>
-
+#include <stack>
 
 #define MAX_NUM_VERTICES      500
+#define READINGS_SPT          2
 /*The maximum line size is equal to max num vertices * 2 + a space character + \n character. */
 #define MAX_LINE_SIZE         (MAX_NUM_VERTICES * 2) + 1 + 1
 #define ERROR_READING_FILE    1
@@ -35,7 +36,7 @@ struct Verticedata {
 };
 
 class Vertice
-{ 
+{
     int type;
     int size;
     Verticedata vertice;
@@ -70,6 +71,7 @@ public:
   list<int> Edges(int Vertice);
   void PrintInformation();
   void BFS(int initialVertice);
+  void DFS(int initialVertice);
 
 
 private:
