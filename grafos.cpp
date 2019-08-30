@@ -56,6 +56,9 @@ list<int>* Vertice::getVerticeList(){
   return listVertices;
 }
 
+/*corrigir. N precisa de ponteiro. como ja sabemos o tamanho
+ * da pra botar bitset<1> RowVertices [size] direto.
+ */
 bitset<1>* Vertice::getVerticeMatrix(){
     bitset<1>* RowVertices;
     if ( type == 0) {
@@ -140,7 +143,7 @@ int Grafos::numAdjacencyVertices(int Vertice){
     return numEdges;
 };
 
-int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int StopVertice/*=0*/)
+int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int StopVertice/*=0*/, int Diameter /*=0*/, int CountDiameter /*=0*/)
  {  
  
     for (int i = 0; i < numVertices; ++i){
@@ -193,6 +196,9 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
             }
             }
         }
+        if(CountDiameter == 1){
+            Diameter = BFSinfo[Vertice-1][1] + 1;
+        }
         if(Stop == 1){
             if(Vertice == StopVertice){
                 return BFSinfo;
@@ -213,6 +219,61 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
         cout << BFSinfo[i][1] << " " << BFSinfo[i][2];
         cout << endl;
     }
+ }
+
+void Grafos::Diameter(){
+    int maxDiameter = 0;
+    int Diameter;
+    int** BFSinfo = new int* [numVertices];
+
+    for(int i = 0; i < numVertices; i++){
+        Diameter = 0;
+        BFSGenerica(i + 1,0,0,1,Diameter);
+        if( Diameter > maxDiameter){
+            maxDiameter = Diameter;
+        }
+    }
+
+        cout << "The diameter of the Graph is " << maxDiameter << endl;
+
+}
+
+
+
+void Grafos::ConnectedComponents(){
+
+    list<int> Vertices;
+
+    for(int i = 0; i < numVertices; i++){
+        Vertices.push_back(i + 1);
+    }
+
+    std::list<int>::iterator arrayPointer [numVertices];
+    std::list<int>::iterator it;
+    for (it = Vertices.begin(); it != Vertices.end(); ++it){
+        arrayPointer[*it - 1] = it;
+    }
+
+    Vertices.erase(arrayPointer[0]);
+    Vertices.erase(arrayPointer[2]);
+    Vertices.erase(arrayPointer[4]);
+
+    for (it = Vertices.begin(); it != Vertices.end(); ++it){
+        cout << *it << endl;
+    }
+     
+ }
+
+  void Grafos::Distance(int firstVertice, int secondVertice){
+
+     int** BFSinfo = new int* [numVertices];
+
+     BFSinfo = BFSGenerica(firstVertice,BFSinfo,1,secondVertice);
+
+        cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
+        cout << endl;
+        cout << "Distance:  " << BFSinfo[secondVertice - 1][1] << endl;
+        cout << "Father in Generator Tree:  "  << BFSinfo[secondVertice - 1][2] << endl;
  }
 
 

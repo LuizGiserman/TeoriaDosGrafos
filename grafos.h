@@ -69,14 +69,20 @@ public:
   int numAdjacencyVertices(int Vertice);
   list<int> Edges(int Vertice);
   void PrintInformation();
-  void ComponentesConexas();
-  void ArvoreGeradora();
+  void Diameter();
+  void ConnectedComponents();
+  void Distance(int firstVertice, int secondVertice);
   void BFS(int initialVertice);
   
-
-
 private:
-  int** BFSGenerica(int initialVertice, int** BFSinfo,int Stop = 0, int StopVertice = 0);
+  int** BFSGenerica(
+    int initialVertice, 
+    int** BFSinfo,
+    int Stop = 0, 
+    int StopVertice = 0,
+    int CountDiamenter = 0,
+    int Diameter = 0
+    );
   void GetInformation();
   void PrintMatrix();
   void PrintList();
