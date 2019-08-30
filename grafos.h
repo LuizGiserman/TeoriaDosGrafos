@@ -16,9 +16,10 @@
 #include <list>
 #include <fstream>
 #include <cstring>
-
+#include <stack>
 
 #define MAX_NUM_VERTICES      500
+#define READINGS_SPT          2
 /*The maximum line size is equal to max num vertices * 2 + a space character + \n character. */
 #define MAX_LINE_SIZE         (MAX_NUM_VERTICES * 2) + 1 + 1
 #define ERROR_READING_FILE    1
@@ -30,12 +31,16 @@ using namespace std;
 struct Verticedata {
   union {
       bitset<1>* Row;
-      list<int>* List;
+      list<int> List;
     };
+
+    public:
+      Verticedata();
+      ~Verticedata();
 };
 
 class Vertice
-{ 
+{
     int type;
     int size;
     Verticedata vertice;
@@ -44,7 +49,7 @@ class Vertice
     Vertice(int type, int size);
     void setVertice(int Vertice);
     bitset<1>* getVerticeMatrix();
-    list<int>* getVerticeList();
+    list<int> getVerticeList();
     bool hasEdge(int Vertice);
 };
 
@@ -69,10 +74,10 @@ public:
   int numAdjacencyVertices(int Vertice);
   list<int> Edges(int Vertice);
   void PrintInformation();
-  void ComponentesConexas();
-  void ArvoreGeradora();
+  void ConnectedComponents();
+  void Distance(int firstVertice, int secondVertice);
   void BFS(int initialVertice);
-  
+  void DFS(int initialVertice);
 
 
 private:

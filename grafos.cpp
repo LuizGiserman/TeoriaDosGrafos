@@ -18,23 +18,32 @@
 
 using namespace std;
 
+Verticedata::Verticedata(){
+    list<int> List;
+    Verticedata::List = List;
+}
+
+Verticedata::~Verticedata(){
+}
+
 
 Vertice::Vertice(int type, int size){
 
-  this->type = type;
-  this->size = size;
+  Vertice::type = type;
+  Vertice::size = size;
+  list<int> List;
 
   if ( type == 0){
-      this->vertice.List = new list<int>;
+      vertice.List = List;
   } else if (type == 1){
-      this->vertice.Row = new bitset<1> [size];
+      vertice.Row = new bitset<1> [size];
   }
 }
 
 void Vertice::setVertice(int Vertice){
 
     if ( type == 0){
-      vertice.List->push_back(Vertice);
+      vertice.List.push_back(Vertice);
   } else if (type == 1){
       vertice.Row[Vertice - 1 ].set();
   }
@@ -42,44 +51,47 @@ void Vertice::setVertice(int Vertice){
 }
 
 
-list<int>* Vertice::getVerticeList(){
-    list<int>* listVertices;
+list<int> Vertice::getVerticeList(){
+    list<int> listVertices;
     if ( type == 0){
       listVertices = vertice.List;
   } else if (type == 1){
       for (int i = 0; i < vertice.Row->size(); i++){
           if(vertice.Row[i] == 1){
-              listVertices->push_back(i + 1);
+              listVertices.push_back(i + 1);
           }
       }
   }
   return listVertices;
 }
 
+/*corrigir. N precisa de ponteiro. como ja sabemos o tamanho
+ * da pra botar bitset<1> RowVertices [size] direto.
+ */
 bitset<1>* Vertice::getVerticeMatrix(){
     bitset<1>* RowVertices;
     if ( type == 0) {
         std::list<int>::iterator it;
         RowVertices = new bitset<1>[size];
-        for (it = vertice.List->begin(); it != vertice.List->end(); ++it){
+        for (it = vertice.List.begin(); it != vertice.List.end(); ++it){
             RowVertices[*it - 1].set();
         }
     } else if (type == 1 ){
         RowVertices = vertice.Row;
     }
     return RowVertices;
-    
+
 }
 
 bool Vertice::hasEdge(int Vertice){
 
     if ( type == 0){
         list<int>::iterator it;
-        it = find(vertice.List->begin(),vertice.List->end(),Vertice);
-        if (it != vertice.List->end()){
+        it = find(vertice.List.begin(),vertice.List.end(),Vertice);
+        if (it != vertice.List.end()){
             return true;
-        } 
-            
+        }
+
         return false;
 
     } else if (type == 1){
@@ -87,7 +99,7 @@ bool Vertice::hasEdge(int Vertice){
             return true;
         }
     }
-        
+
         return false;
 };
 
@@ -101,6 +113,7 @@ Grafos::Grafos(std::string fileName, int type){
     this->type = type;
 
     Grafos::Populate();
+    cout<<"Passei do Populate" <<endl;
 };
 
 /* Print function, just for test it the constructor is okay */
@@ -135,8 +148,8 @@ void Grafos::Print(){
 
 int Grafos::numAdjacencyVertices(int Vertice){
     int numEdges = 0;
-    list<int>* Vertices = grafo[Vertice]->getVerticeList();
-    numEdges = Vertices->size();
+    list<int> Vertices = grafo[Vertice]->getVerticeList();
+    numEdges = Vertices.size();
     return numEdges;
 };
 
@@ -159,13 +172,13 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
     while(Queue.empty() != true){
         //get first element of Queue
         int Vertice = Queue.front();
-        //take off the first element of Queue 
+        //take off the first element of Queue
         Queue.pop();
         if ( type == 0 ){
-            // List of adjacents of Vertice 
-            list<int>* Vertices = grafo[Vertice-1]->getVerticeList();
+            // List of adjacents of Vertice
+            list<int> Vertices = grafo[Vertice-1]->getVerticeList();
             std::list<int>::iterator it;
-            for (it = Vertices->begin(); it != Vertices->end(); ++it){
+            for (it = Vertices.begin(); it != Vertices.end(); ++it){
                 if(BFSinfo[*it - 1][0] == 0){
                     //Mark Vertice
                     BFSinfo[*it - 1][0] = 1;
@@ -177,7 +190,7 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
                 }
             }
         } else {
-            // List of adjacents of Vertice 
+            // List of adjacents of Vertice
             bitset<1>* Vertices = grafo[Vertice - 1]->getVerticeMatrix();
             for (int i = 0; i < numVertices; i++){
                 if(Vertices[i] == 1) {
@@ -189,8 +202,8 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
                         // Define Vertice as father
                         BFSinfo[i][2] = Vertice;
                         Queue.push(i + 1);
+                    }
                 }
-            }
             }
         }
         if(Stop == 1){
@@ -204,9 +217,9 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
 
  void Grafos::BFS(int initialVertice){
 
-     int** BFSinfo = new int* [numVertices];
+    int** BFSinfo = new int* [numVertices];
 
-     BFSinfo = BFSGenerica(initialVertice,BFSinfo);
+    BFSGenerica(initialVertice,BFSinfo);
 
     for (int i = 0; i < numVertices; i++){
         cout << i + 1 << "  ";
@@ -215,15 +228,27 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
     }
  }
 
+ void Grafos::Distance(int firstVertice, int secondVertice){
 
+     int** BFSinfo = new int* [numVertices];
 
+     BFSinfo = BFSGenerica(firstVertice,BFSinfo,1,secondVertice);
+
+        cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
+        cout << endl;
+        cout << "Distance:  " << BFSinfo[secondVertice - 1][1] << endl;
+        cout << "Father in Generator Tree:  "  << BFSinfo[secondVertice - 1][2] << endl;
+
+ }
+
+ 
 void Grafos::createGrafo(int rows){
     Vertice** grafo = new Vertice* [rows];
 
     for (int i = 0; i < rows; ++i){
-        grafo[i] = new Vertice(type,rows);
+        grafo[i] = new Vertice(type, numVertices);
     }
-    this->grafo=grafo;
+    Grafos::grafo=grafo;
 }
 
 /* Coloca os dados no grafo */
@@ -280,9 +305,9 @@ void Grafos::Populate()
   void Grafos::PrintList(){
      for(int i = 0; i < numVertices; ++i){
          cout << i + 1 << "  ";
-         list<int>* List;
+         list<int> List;
          List = grafo[i]->getVerticeList();
-         for(list<int>::iterator i = List->begin(); i != List->end(); ++i ){
+         for(list<int>::iterator i = List.begin(); i != List.end(); ++i ){
              cout << *i << " ";
          }
          cout << endl;
