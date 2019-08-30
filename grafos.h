@@ -37,15 +37,15 @@ struct Verticedata {
 class Vertice
 { 
     int type;
+    int size;
     Verticedata vertice;
 
   public:
-    Vertice(int type, int size = 0);
+    Vertice(int type, int size);
     void setVertice(int Vertice);
-    void getVertice();
-    bool hasEdge(int Vertice);
     bitset<1>* getVerticeMatrix();
     list<int>* getVerticeList();
+    bool hasEdge(int Vertice);
 };
 
 class Grafos
@@ -58,8 +58,6 @@ public:
   int numVertices;
   int numEdges;
   Vertice** grafo;
-  bitset<1>** matrix;
-  std::list<int> *vectorGraph;
   int maxDegree;
   int minDegree;
   int avgDegree;
@@ -68,14 +66,13 @@ public:
   void createGrafo(int rows);
   void Populate();
   void Print();
-  int Edges(int Vertice);
+  int numAdjacencyVertices(int Vertice);
+  list<int> Edges(int Vertice);
   void PrintInformation();
   void BFS(int initialVertice);
 
 
 private:
-  void BFSMatrix(int initialVertice);
-  void BFSList(int initialVertice);
   void GetInformation();
   void PrintMatrix();
   void PrintList();

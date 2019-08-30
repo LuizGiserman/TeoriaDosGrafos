@@ -10,6 +10,7 @@
 #include <string>
 #include <cerrno>
 #include <vector>
+#include <queue>
 #include <bitset>
 #include <list>
 #include <fstream>
@@ -21,6 +22,7 @@ using namespace std;
 Vertice::Vertice(int type, int size){
 
   this->type = type;
+  this->size = size;
 
   if ( type == 0){
       this->vertice.List = new list<int>;
@@ -36,26 +38,38 @@ void Vertice::setVertice(int Vertice){
   } else if (type == 1){
       vertice.Row[Vertice - 1 ].set();
   }
+
 }
 
-void Vertice::getVertice(){
-
-    if ( type == 0){
-      getVerticeList();
-  } else if (type == 1){
-      getVerticeMatrix();
-  }
-}
 
 list<int>* Vertice::getVerticeList(){
-    return vertice.List;
+    list<int>* listVertices;
+    if ( type == 0){
+      listVertices = vertice.List;
+  } else if (type == 1){
+      for (int i = 0; i < vertice.Row->size(); i++){
+          if(vertice.Row[i] == 1){
+              listVertices->push_back(i + 1);
+          }
+      }
+  }
+  return listVertices;
 }
 
 bitset<1>* Vertice::getVerticeMatrix(){
-    return vertice.Row;
+    bitset<1>* RowVertices;
+    if ( type == 0) {
+        std::list<int>::iterator it;
+        RowVertices = new bitset<1>[size];
+        for (it = vertice.List->begin(); it != vertice.List->end(); ++it){
+            RowVertices[*it - 1].set();
+        }
+    } else if (type == 1 ){
+        RowVertices = vertice.Row;
+    }
+    return RowVertices;
     
 }
-
 
 bool Vertice::hasEdge(int Vertice){
 
@@ -119,33 +133,76 @@ void Grafos::Print(){
  };
 
 
-int Grafos::Edges(int Vertice){
+int Grafos::numAdjacencyVertices(int Vertice){
     int numEdges = 0;
-    if ( type == 1){
-         bitset<1>* Row;
-         Row = grafo[Vertice]->getVerticeMatrix();
-         for(int j = 0; j < numVertices; ++j ){
-             if(Row[j] == 1){
-                 numEdges++;
-             }
-         }
-    } else if (type == 0){
-        list<int>* List;
-         List = grafo[Vertice]->getVerticeList();
-         for(list<int>::iterator i = List->begin(); i != List->end(); ++i ){
-             numEdges++;
-         }
-    }
+    list<int>* Vertices = grafo[Vertice]->getVerticeList();
+    numEdges = Vertices->size();
     return numEdges;
 };
 
  void Grafos::BFS(int initialVertice)
  {
-     if(type == 0){
-         Grafos::BFSList(initialVertice);
-     } else if(type == 1){
-         Grafos::BFSMatrix(initialVertice);
-     }
+    int** BFSinfo = new int* [numVertices];
+    for (int i = 0; i < numVertices; ++i){
+        BFSinfo[i] = new int[3]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
+        BFSinfo[i][0] = 0;               // 0 é nao marcado || 1 é marcado
+        BFSinfo[i][1] = numVertices + 1; // numVertices + 1 will be treat like infinity
+        BFSinfo[i][2] = numVertices + 1; // numVertices + 1 will be treat like infinity
+    }
+
+    BFSinfo[initialVertice - 1][0] = 1; // initialVertice marked
+    BFSinfo[initialVertice - 1][1] = 0; // root
+    BFSinfo[initialVertice - 1][2] = 0; // no father
+
+    queue<int> Queue; // Queue Created
+    Queue.push(initialVertice); // initialVertice first element of list
+    while(Queue.empty() != true){
+        //get first element of Queue
+        int Vertice = Queue.front();
+        //take off the first element of Queue 
+        Queue.pop();
+        if ( type == 0 ){
+            // List of adjacents of Vertice 
+            list<int>* Vertices = grafo[Vertice-1]->getVerticeList();
+            std::list<int>::iterator it;
+            for (it = Vertices->begin(); it != Vertices->end(); ++it){
+                if(BFSinfo[*it - 1][0] == 0){
+                    //Mark Vertice
+                    BFSinfo[*it - 1][0] = 1;
+                    //Define Level of the father as the level of father plus 1
+                    BFSinfo[*it - 1][1] = BFSinfo[Vertice-1][1] + 1;
+                    // Define Vertice as father
+                    BFSinfo[*it - 1][2] = Vertice;
+                    Queue.push(*it);
+                }
+            }
+        } else {
+            // List of adjacents of Vertice 
+            bitset<1>* Vertices = grafo[Vertice - 1]->getVerticeMatrix();
+            for (int i = 0; i < numVertices; i++){
+                if(Vertices[i] == 1) {
+                    if(BFSinfo[i][0] == 0){
+                        //Mark Vertice
+                        BFSinfo[i][0] = 1;
+                        //Define Level of the father as the level of father plus 1
+                        BFSinfo[i][1] = BFSinfo[Vertice-1][1] + 1;
+                        // Define Vertice as father
+                        BFSinfo[i][2] = Vertice;
+                        Queue.push(i + 1);
+                }
+            }
+            }
+        }
+        
+
+
+    }
+
+    for (int i = 0; i < numVertices; i++){
+        cout << i + 1 << "  ";
+        cout << BFSinfo[i][1] << " " << BFSinfo[i][2];
+        cout << endl;
+    }
  }
 
 void Grafos::createGrafo(int rows){
@@ -227,7 +284,7 @@ void Grafos::GetInformation() {
     int totalDegrees = 0;
     int actualVertice = 0;
     for(int i = actualVertice; i < numVertices; ++i ){
-        Degree = Edges(i);
+        Degree = numAdjacencyVertices(i);
         totalDegrees += Degree;
         Degrees.push_back(Degree);
     }
@@ -250,28 +307,3 @@ void Grafos::GetInformation() {
      this->medDegree = totalDegrees/numVertices;
 
 };
-
-
-void Grafos::BFSMatrix(int initialVertice)
-{ int** vertices = new int* [numVertices];
-    for (int i = 0; i < numVertices; ++i){
-        vertices[i] = new int[3]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
-        vertices[i][0] = 0;               // 0 é nao marcado || 1 é marcado
-        vertices[i][1] = numVertices + 1; // numVertices + 1 will be treat like infinity
-        vertices[i][3] = numVertices + 1; // numVertices + 1 will be treat like infinity
-    }
-
-    vertices[initialVertice][0] = 0; // initialVertice marked
-    vertices[initialVertice][0] = 0; // root
-    vertices[initialVertice][0] = 0; // no father
-
-    vector<int> Queue; // Queue Created
-    Queue.push_back(initialVertice); // initialVertice first element of list
-
-
-}
-
-void Grafos::BFSList(int initialVertice)
-{
-
- }
