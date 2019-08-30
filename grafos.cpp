@@ -140,9 +140,9 @@ int Grafos::numAdjacencyVertices(int Vertice){
     return numEdges;
 };
 
- void Grafos::BFS(int initialVertice)
- {
-    int** BFSinfo = new int* [numVertices];
+int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int StopVertice/*=0*/)
+ {  
+ 
     for (int i = 0; i < numVertices; ++i){
         BFSinfo[i] = new int[3]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
         BFSinfo[i][0] = 0;               // 0 é nao marcado || 1 é marcado
@@ -193,10 +193,20 @@ int Grafos::numAdjacencyVertices(int Vertice){
             }
             }
         }
-        
-
-
+        if(Stop == 1){
+            if(Vertice == StopVertice){
+                return BFSinfo;
+            }
+        }
     }
+    return BFSinfo;
+ }
+
+ void Grafos::BFS(int initialVertice){
+
+     int** BFSinfo = new int* [numVertices];
+
+     BFSinfo = BFSGenerica(initialVertice,BFSinfo);
 
     for (int i = 0; i < numVertices; i++){
         cout << i + 1 << "  ";
@@ -204,6 +214,8 @@ int Grafos::numAdjacencyVertices(int Vertice){
         cout << endl;
     }
  }
+
+
 
 void Grafos::createGrafo(int rows){
     Vertice** grafo = new Vertice* [rows];

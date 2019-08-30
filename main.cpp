@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main(){
-  Grafos grafo = Grafos("grafoteste.txt",1);
+  Grafos grafo = Grafos("grafoteste.txt",0);
   
   grafo.BFS(1);
   cout << endl;
