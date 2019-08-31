@@ -27,11 +27,11 @@ void process_mem_usage(double& vm_usage, double& resident_set)
 }
 
 int main(){
-  Grafos grafo = Grafos("grafoteste.txt",0);
+  Grafos grafo = Grafos("as_graph.txt",0);
+  grafo.BFS(2);
+  // grafo.ConnectedComponents();
 
-  grafo.ConnectedComponents();
-  
-  
+
 
   return 0;
 }

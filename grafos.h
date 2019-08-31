@@ -16,11 +16,9 @@
 #include <list>
 #include <fstream>
 #include <cstring>
+#include <stack>
 
-
-#define MAX_NUM_VERTICES      500
-/*The maximum line size is equal to max num vertices * 2 + a space character + \n character. */
-#define MAX_LINE_SIZE         (MAX_NUM_VERTICES * 2) + 1 + 1
+#define READINGS_SPT          2
 #define ERROR_READING_FILE    1
 
 typedef unsigned char BYTE;
@@ -35,7 +33,7 @@ struct Verticedata {
 };
 
 class Vertice
-{ 
+{
     int type;
     int size;
     Verticedata vertice;
@@ -69,20 +67,23 @@ public:
   int numAdjacencyVertices(int Vertice);
   list<int> Edges(int Vertice);
   void PrintInformation();
-  void Diameter();
+  void GetDiameter();
   void ConnectedComponents();
   void Distance(int firstVertice, int secondVertice);
   void BFS(int initialVertice);
-  
+  void DFS(int initialVertice);
 private:
   int** BFSGenerica(
-    int initialVertice, 
+    int initialVertice,
     int** BFSinfo,
-    int Stop = 0, 
+    int Stop = 0,
     int StopVertice = 0,
-    int CountDiamenter = 0,
-    int Diameter = 0
-    );
+    int *diameter = NULL);
+
+    void DFSGenerica(
+        int initialVertice,
+        int **father_level);
+
   void GetInformation();
   void PrintMatrix();
   void PrintList();

@@ -71,7 +71,7 @@ bitset<1>* Vertice::getVerticeMatrix(){
         RowVertices = vertice.Row;
     }
     return RowVertices;
-    
+
 }
 
 bool Vertice::hasEdge(int Vertice){
@@ -81,8 +81,8 @@ bool Vertice::hasEdge(int Vertice){
         it = find(vertice.List->begin(),vertice.List->end(),Vertice);
         if (it != vertice.List->end()){
             return true;
-        } 
-            
+        }
+
         return false;
 
     } else if (type == 1){
@@ -90,7 +90,7 @@ bool Vertice::hasEdge(int Vertice){
             return true;
         }
     }
-        
+
         return false;
 };
 
@@ -143,9 +143,15 @@ int Grafos::numAdjacencyVertices(int Vertice){
     return numEdges;
 };
 
-int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int StopVertice/*=0*/, int Diameter /*=0*/, int CountDiameter /*=0*/)
- {  
- 
+int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int StopVertice/*=0*/, int *diameter /*=0*/)
+ {
+     bitset<1> *listVertices;
+     list<int> *matrixVertices;
+     int auxVertice;
+
+     if (diameter != NULL)
+        *diameter = 0;
+
     for (int i = 0; i < numVertices; ++i){
         BFSinfo[i] = new int[3]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
         BFSinfo[i][0] = 0;               // 0 é nao marcado || 1 é marcado
@@ -161,50 +167,69 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
     Queue.push(initialVertice); // initialVertice first element of list
     while(Queue.empty() != true){
         //get first element of Queue
-        int Vertice = Queue.front();
-        //take off the first element of Queue 
+        auxVertice = Queue.front();
+        //take off the first element of Queue
         Queue.pop();
         if ( type == 0 ){
-            // List of adjacents of Vertice 
-            list<int>* Vertices = grafo[Vertice-1]->getVerticeList();
+            // List of adjacents of Vertice
+            matrixVertices = grafo[auxVertice-1]->getVerticeList();
             std::list<int>::iterator it;
-            for (it = Vertices->begin(); it != Vertices->end(); ++it){
-                if(BFSinfo[*it - 1][0] == 0){
+            for (it = matrixVertices->begin(); it != matrixVertices->end(); ++it)
+            {
+                if(BFSinfo[*it - 1][0] == 0)
+                {
                     //Mark Vertice
                     BFSinfo[*it - 1][0] = 1;
                     //Define Level of the father as the level of father plus 1
-                    BFSinfo[*it - 1][1] = BFSinfo[Vertice-1][1] + 1;
+                    BFSinfo[*it - 1][1] = BFSinfo[auxVertice-1][1] + 1;
                     // Define Vertice as father
-                    BFSinfo[*it - 1][2] = Vertice;
+                    BFSinfo[*it - 1][2] = auxVertice;
                     Queue.push(*it);
+
+                    if(diameter != NULL)
+                    {
+                        cout << "before Updating: " << *diameter <<" BFSinfo[*it -1][1] : " <<  BFSinfo[*it -1][1] << endl;
+                        if(*diameter < BFSinfo[*it -1][1])
+                            *diameter = BFSinfo[*it -1][1];
+                        cout << "new Diameter : " << *diameter << " " << endl;
+                    }
+
                 }
             }
         } else {
-            // List of adjacents of Vertice 
-            bitset<1>* Vertices = grafo[Vertice - 1]->getVerticeMatrix();
+            // List of adjacents of Vertice
+            listVertices = grafo[auxVertice - 1]->getVerticeMatrix();
             for (int i = 0; i < numVertices; i++){
-                if(Vertices[i] == 1) {
+                if(listVertices[i] == 1) {
                     if(BFSinfo[i][0] == 0){
                         //Mark Vertice
                         BFSinfo[i][0] = 1;
                         //Define Level of the father as the level of father plus 1
-                        BFSinfo[i][1] = BFSinfo[Vertice-1][1] + 1;
+                        BFSinfo[i][1] = BFSinfo[auxVertice-1][1] + 1;
                         // Define Vertice as father
-                        BFSinfo[i][2] = Vertice;
+                        BFSinfo[i][2] = auxVertice;
                         Queue.push(i + 1);
+
+                        if(diameter != NULL)
+                        {
+                            cout << *diameter << " " << endl;
+                            if(*diameter < BFSinfo[i][1])
+                                *diameter = BFSinfo[i][1];
+                            cout << *diameter << " " << endl;
+                        }
+                    }
                 }
             }
-            }
         }
-        if(CountDiameter == 1){
-            Diameter = BFSinfo[Vertice-1][1] + 1;
-        }
+        // if(CountDiameter == 1){
+        //     Diameter = BFSinfo[auxVertice-1][1] + 1;
+        // }
         if(Stop == 1){
-            if(Vertice == StopVertice){
+            if(auxVertice == StopVertice){
                 return BFSinfo;
             }
         }
-    }
+    }/*end while*/
     return BFSinfo;
  }
 
@@ -214,24 +239,147 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
 
      BFSinfo = BFSGenerica(initialVertice,BFSinfo);
 
+    cout << "vertice\tfather\tlevel" << endl;
     for (int i = 0; i < numVertices; i++){
-        cout << i + 1 << "  ";
-        cout << BFSinfo[i][1] << " " << BFSinfo[i][2];
+        cout << i + 1 << "\t";
+        cout << BFSinfo[i][2] << "\t" << BFSinfo[i][1];
         cout << endl;
     }
  }
 
-void Grafos::Diameter(){
-    int maxDiameter = 0;
-    int Diameter;
-    int** BFSinfo = new int* [numVertices];
+ void Grafos::DFSGenerica(int initialVertice, int **father_level)
+  {
+    /*array to mark the vertices*/
+    bitset<1> marked [numVertices];
+    /*stack to implement the dfs*/
+    stack<int> auxStack;
+    /*int to put on the stack and keep track of the vertices*/
+    int auxVertice;
 
-    for(int i = 0; i < numVertices; i++){
-        Diameter = 0;
-        BFSGenerica(i + 1,0,0,1,Diameter);
-        if( Diameter > maxDiameter){
-            maxDiameter = Diameter;
+    /*Type = 0 variables*/
+    /*list to get the vertice's adjacency list*/
+    list<int> *adjacents;
+    list<int>::iterator it;
+
+    /*Type = 1 variables*/
+    /*adjRow to get the row of adjacencies*/
+    bitset<1>  *adjRow;
+
+    /*others*/
+    int index;
+
+
+    /*Marking all vertices as not found
+     *setting level and father to -1 (nonexistent);
+     */
+    for (index = 0; index < numVertices; index++)
+    {
+      marked [index] = 0;
+      father_level[index] = new int [READINGS_SPT];
+      father_level [index][0] = -1;
+      father_level [index][1] = -1;
+    }
+
+    /*setting root and level of the starting point*/
+    father_level [initialVertice-1][0] = 0;
+    father_level [initialVertice-1][1] = 0;
+    /*puts the value of the initial vertice in the stack*/
+    auxStack.push(initialVertice);
+
+    while (!auxStack.empty())
+    {
+        /*gets top of the stack*/
+        auxVertice = auxStack.top();
+        /*remove it from the stack*/
+        auxStack.pop();
+        /*if adjacency list*/
+        if(type ==  0)
+        {
+          /*if auxVertice is not marked*/
+          if (marked[auxVertice-1].test(0) == false)
+          {
+            /*marking vertice*/
+            marked[auxVertice-1].set();
+            /*Getting the adjacency list for the Vertice grafos[auxVertice -1]*/
+            adjacents = grafo[auxVertice - 1]->getVerticeList();
+            /*for every adjacent vertice, add it to the stack*/
+            for (it = adjacents->begin(); it != adjacents->end(); it++)
+            {
+              auxStack.push(*it);
+              if(father_level[*it-1][0] == -1)
+              {
+                  /*Also, update the father and level of the adjacent vertices*/
+                  father_level [*it-1][0] = auxVertice;
+                  father_level [*it-1][1] = father_level[auxVertice-1] [1] + 1;
+              }
+
+            }
+          }
         }
+
+        /*if matrix*/
+        else if(type == 1)
+        {
+            cout << auxVertice << endl;
+            /*if u is not marked*/
+            if (marked[auxVertice-1].test(0) == false)
+            {
+                /*mark it*/
+                marked[auxVertice-1].set();
+                adjRow = grafo[auxVertice-1]->getVerticeMatrix();
+
+                /*for every adjacency*/
+                for (index = numVertices - 1; index >= 0; --index)\
+                    // cout << "in for" << index << endl;
+                   if (adjRow[index] == 1)
+                   {
+                       /*put every adjacency in the stack*/
+                       /*if it doesn't have a father, add it*/
+                       auxStack.push(index + 1);
+                       if (father_level[index][0] == -1)
+                       {
+                           father_level[index][0] = auxVertice;
+                           father_level[index][1] = father_level[auxVertice-1][1] + 1;
+                       }
+
+                   }
+            }
+    }
+
+    }/*end while*/
+
+  }
+
+void Grafos::DFS (int initialVertice)
+{
+
+    int** father_level = new int* [numVertices];
+
+    DFSGenerica(initialVertice, father_level);
+
+    cout << "vertice\tfather\tlevel\t" <<endl;
+    for (int i = 0; i < numVertices; i++)
+    {
+        cout << i + 1 << "\t";
+        cout << father_level[i][0] << "\t" << father_level[i][1];
+        cout << endl;
+    }
+}
+
+void Grafos::GetDiameter(){
+    int maxDiameter = 0;
+    int diameter;
+    int** BFSinfo = new int* [numVertices];
+    cout << "aqui ta bom" << endl;
+    for(int i = 0; i < numVertices; i++){
+        diameter = 0;
+        cout << "index : " << i << endl;
+        BFSinfo =  BFSGenerica(i + 1, BFSinfo, 0, 0, &diameter);
+        cout << "saiu da bfs" << endl;
+        if( diameter > maxDiameter)
+            maxDiameter = diameter;
+
+        cout << "inDiameter(BFS(" << i << ")) : " << diameter << endl;
     }
 
         cout << "The diameter of the Graph is " << maxDiameter << endl;
@@ -261,7 +409,7 @@ void Grafos::ConnectedComponents(){
     for (it = Vertices.begin(); it != Vertices.end(); ++it){
         cout << *it << endl;
     }
-     
+
  }
 
   void Grafos::Distance(int firstVertice, int secondVertice){
