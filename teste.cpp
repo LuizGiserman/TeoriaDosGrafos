@@ -12,11 +12,11 @@ void Grafos::ConnectedComponents(){
         arrayPointer[*it - 1] = &*it;
     }
 
-    
 
 
 
-     
+
+
  }
 
  void Grafos::DFS(int initialVertice)
@@ -37,7 +37,7 @@ void Grafos::ConnectedComponents(){
 
    /*Type = 1 variables*/
    /*adjRow to get the row of adjacencies*/
-   bitset<1>  adjRow;
+   bitset<1>  adjRow [numVertices];
 
    /*others*/
    unsigned index;

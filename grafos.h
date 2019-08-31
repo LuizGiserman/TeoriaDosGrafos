@@ -18,10 +18,9 @@
 #include <cstring>
 #include <stack>
 
-#define MAX_NUM_VERTICES      500
 #define READINGS_SPT          2
-/*The maximum line size is equal to max num vertices * 2 + a space character + \n character. */
-#define MAX_LINE_SIZE         (MAX_NUM_VERTICES * 2) + 1 + 1
+#define STOP_BFS              1
+
 #define ERROR_READING_FILE    1
 
 typedef unsigned char BYTE;
@@ -30,8 +29,8 @@ using namespace std;
 
 struct Verticedata {
   union {
-      bitset<1>* Row;
-      list<int> List;
+      bitset<1>* adjacenciesRow;
+      list<int> linkedList;
     };
 
     public:
@@ -47,31 +46,32 @@ class Vertice
 
   public:
     Vertice(int type, int size);
-    void setVertice(int Vertice);
+    void SetVertice(int verticeNumber);
+    list<int> GetVerticeList();
     bitset<1>* getVerticeMatrix();
-    list<int> getVerticeList();
-    bool hasEdge(int Vertice);
+    bool HasEdge(int Vertice);
 };
 
 class Grafos
 {
 
 public:
-  Grafos(string, int type);
   string filename;
   int type;
   int numVertices;
   int numEdges;
-  Vertice** grafo;
+  vector<Vertice> grafo;
   int maxDegree;
   int minDegree;
   int avgDegree;
   int medDegree;
 
-  void createGrafo(int rows);
+  Grafos(string, int type);
+  void CreateGrafo();
   void Populate();
   void Print();
-  int numAdjacencyVertices(int Vertice);
+  int GetNumAdjacenciesVertice(int verticeNumber);
+
   list<int> Edges(int Vertice);
   void PrintInformation();
   void ConnectedComponents();
@@ -81,7 +81,7 @@ public:
 
 
 private:
-  int** BFSGenerica(int initialVertice, int** BFSinfo,int Stop = 0, int StopVertice = 0);
+  int** BFSGenerica(int initialVertice, int **bfsInfo,int stop = 0, int stopVertice = 0);
   void GetInformation();
   void PrintMatrix();
   void PrintList();
