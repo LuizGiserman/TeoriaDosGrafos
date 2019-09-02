@@ -43,6 +43,15 @@ public:
     bool hasEdge(int Vertice);
 };
 
+class Components 
+{
+  public:
+    Components();
+    void InsertVertice(int Vertice);
+    int size;
+    list<int> listComp;
+};
+
 class Grafos
 {
 
@@ -74,17 +83,21 @@ private:
   void BFSGenerica(
     int initialVertice,
     int** BFSinfo,
-    int Stop = 0,
+    list<Components> listComponents, // Não consegui botar como default parameter, vou botar para todas as unfçoes enviarem esse parametro, mas ele nao vai fazer nada sem ser no connected components
+    int BFStype = 0,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
     int StopVertice = 0,
-    int *diameter = NULL);
+    int *diameter = NULL,
+    std::list<int>::iterator *arrayPointer = NULL,
+    list<int> listVerticesforCC = list<int>(0)
+    );
 
     void DFSGenerica(
         int initialVertice,
         int **father_level);
 
-  void GetInformation();
-  void PrintMatrix();
-  void PrintList();
+    void GetInformation();
+    void PrintMatrix();
+    void PrintList();
 };
 
 #endif
