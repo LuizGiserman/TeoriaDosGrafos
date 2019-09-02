@@ -164,25 +164,24 @@ void Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int 
         Queue.pop();
         if ( type == 0 ){
             // List of adjacents of Vertice
-            listVertices = grafo[auxVertice-1].getVerticeList();
-            std::list<int>::iterator it;
-            for (it = listVertices.begin(); it != listVertices.end(); ++it)
+            listVertices = grafo[auxVertice-1].adjList;
+            for(auto const &it : listVertices)
             {
-                if(BFSinfo[*it - 1][0] == 0)
+                if(BFSinfo[it - 1][0] == 0)
                 {
                     //Mark Vertice
-                    BFSinfo[*it - 1][0] = 1;
+                    BFSinfo[it - 1][0] = 1;
                     //Define Level of the father as the level of father plus 1
-                    BFSinfo[*it - 1][1] = BFSinfo[auxVertice-1][1] + 1;
+                    BFSinfo[it - 1][1] = BFSinfo[auxVertice-1][1] + 1;
                     // Define Vertice as father
-                    BFSinfo[*it - 1][2] = auxVertice;
-                    Queue.push(*it);
+                    BFSinfo[it - 1][2] = auxVertice;
+                    Queue.push(it);
 
                     if(diameter != NULL)
                     {
-                        cout << "before Updating: " << *diameter <<" BFSinfo[*it -1][1] : " <<  BFSinfo[*it -1][1] << endl;
-                        if(*diameter < BFSinfo[*it -1][1])
-                            *diameter = BFSinfo[*it -1][1];
+                        cout << "before Updating: " << *diameter <<" BFSinfo[*it -1][1] : " <<  BFSinfo[it -1][1] << endl;
+                        if(*diameter < BFSinfo[it -1][1])
+                            *diameter = BFSinfo[it -1][1];
                         cout << "new Diameter : " << *diameter << " " << endl;
                     }
 
@@ -190,7 +189,7 @@ void Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int 
             }
         } else {
             // List of adjacents of Vertice
-            matrixVertices = grafo[auxVertice - 1].getVerticeMatrix();
+            matrixVertices = grafo[auxVertice - 1].adjRow;
             for (int i = 0; i < numVertices; i++){
                 if(matrixVertices[i] == 1) {
                     if(BFSinfo[i][0] == 0){
@@ -228,7 +227,7 @@ void Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int 
 
      int** BFSinfo = new int* [numVertices];
 
-     BFSGenerica(initialVertice,BFSinfo);
+     BFSGenerica(initialVertice, BFSinfo);
 
     cout << "vertice\tfather\tlevel" << endl;
     for (int i = 0; i < numVertices; i++){
@@ -250,11 +249,10 @@ void Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int 
     /*Type = 0 variables*/
     /*list to get the vertice's adjacency list*/
     list<int> adjacents;
-    list<int>::iterator it;
 
     /*Type = 1 variables*/
     /*adjRow to get the row of adjacencies*/
-    bitset<1>  *adjRow;
+    bitset<1> *adjRow;
 
     /*others*/
     int index;
@@ -294,14 +292,14 @@ void Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int 
             /*Getting the adjacency list for the Vertice grafos[auxVertice -1]*/
             adjacents = grafo[auxVertice - 1].getVerticeList();
             /*for every adjacent vertice, add it to the stack*/
-            for (it = adjacents.begin(); it != adjacents.end(); it++)
+            for (auto const &it : adjacents)
             {
-              auxStack.push(*it);
-              if(father_level[*it-1][0] == -1)
+              auxStack.push(it);
+              if(father_level[it-1][0] == -1)
               {
                   /*Also, update the father and level of the adjacent vertices*/
-                  father_level [*it-1][0] = auxVertice;
-                  father_level [*it-1][1] = father_level[auxVertice-1] [1] + 1;
+                  father_level [it-1][0] = auxVertice;
+                  father_level [it-1][1] = father_level[auxVertice-1] [1] + 1;
               }
 
             }
@@ -421,8 +419,6 @@ void Grafos::createGrafo()
 /* Coloca os dados no grafo */
 void Grafos::Populate()
 {
-    int numVertices;
-    int numEdges;
     int auxVertice1;
     int auxVertice2;
     std::ifstream file;
@@ -452,9 +448,6 @@ void Grafos::Populate()
     }
 
     file.close();
-
-    this -> numVertices = numVertices;
-    this -> numEdges = numEdges;
 }
 
  void Grafos::PrintMatrix()

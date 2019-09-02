@@ -28,7 +28,7 @@ void process_mem_usage(double& vm_usage, double& resident_set)
 
 int main(){
   Grafos grafo = Grafos("as_graph.txt",0);
-  grafo.BFS(2);
+  grafo.BFS(1);
   // grafo.ConnectedComponents();
 
 

@@ -28,13 +28,14 @@ using namespace std;
 
 class Vertice
 {
+public:
+
     int type;
     int size;
     list<int> adjList; /*type = 0*/
-    bitset<1>* adjRow; /*type = 1*/
+    bitset<1>* adjRow = NULL; /*type = 1*/
 
 
-  public:
     Vertice(int type, int size);
     void setVertice(int Vertice);
     bitset<1>* getVerticeMatrix();
