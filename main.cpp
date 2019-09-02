@@ -28,15 +28,12 @@ void process_mem_usage(double& vm_usage, double& resident_set)
 }
 
 int main(){
-  cout << "Começou";
+  
   Grafos grafo = Grafos("grafoteste.txt",0);
-  cout << " Clock"; 
   clock_t start = clock();
-  cout << " Connected Components";
   grafo.ConnectedComponents();
   clock_t end = clock();
   cout<< (double)(end-start)/CLOCKS_PER_SEC<<endl;
-  // grafo.ConnectedComponents();
 
 
 

@@ -178,9 +178,10 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, list<Components> lis
         //take off the first element of Queue
         auxQueue.pop();
 
-        if ( BFStype == 3)
+        if ( BFStype == 3){
             listVerticesforCC.erase(arrayPointer[auxVertice - 1]);
             newComponent.InsertVertice(auxVertice);
+        }
 
         if ( type == 0 )
         {
@@ -404,8 +405,6 @@ void Grafos::GetDiameter(){
 
 void Grafos::ConnectedComponents(){
 
-    cout << 'Entrou no connected';
-
     int auxVertice;
     int** bfsInfo = new int* [numVertices];
 
@@ -421,10 +420,13 @@ void Grafos::ConnectedComponents(){
     for (it = listVerticesforCC.begin(); it != listVerticesforCC.end(); ++it)
         arrayPointer[*it - 1] = it;
 
+
+
     while(!listVerticesforCC.empty()){
-        cout << 'Entrou no while';
         auxVertice = listVerticesforCC.front();
         listVerticesforCC.pop_front();
+
+
             BFSGenerica(
                 auxVertice,
                 bfsInfo,
