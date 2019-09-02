@@ -272,15 +272,15 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int 
      */
     for (index = 0; index < numVertices; index++)
     {
-      marked [index] = 0;
       father_level[index] = new int [READINGS_SPT];
-      father_level [index][0] = -1;
-      father_level [index][1] = -1;
+      father_level [0][index] = -1;
+      father_level [1][index] = -1;
     }
+    memset(marked, 0, numVertices);
 
     /*setting root and level of the starting point*/
-    father_level [initialVertice-1][0] = 0;
-    father_level [initialVertice-1][1] = 0;
+    father_level [0][initialVertice-1] = 0;
+    father_level [1][initialVertice-1] = 0;
     /*puts the value of the initial vertice in the stack*/
     auxStack.push(initialVertice);
 
@@ -304,11 +304,11 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int 
             for (auto const &it : adjacents)
             {
               auxStack.push(it);
-              if(father_level[it-1][0] == -1)
+              if(father_level[0][it-1] == -1)
               {
                   /*Also, update the father and level of the adjacent vertices*/
-                  father_level [it-1][0] = auxVertice;
-                  father_level [it-1][1] = father_level[auxVertice-1] [1] + 1;
+                  father_level [0][it-1] = auxVertice;
+                  father_level [1][it-1] = father_level[auxVertice-1] [1] + 1;
               }
 
             }
@@ -334,10 +334,10 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int 
                        /*put every adjacency in the stack*/
                        /*if it doesn't have a father, add it*/
                        auxStack.push(index + 1);
-                       if (father_level[index][0] == -1)
+                       if (father_level[0][index] == -1)
                        {
-                           father_level[index][0] = auxVertice;
-                           father_level[index][1] = father_level[auxVertice-1][1] + 1;
+                           father_level[0][index] = auxVertice;
+                           father_level[1][index] = father_level[auxVertice-1][1] + 1;
                        }
 
                    }
@@ -351,7 +351,8 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int 
 void Grafos::DFS (int initialVertice)
 {
 
-    int** father_level = new int* [numVertices];
+    int** father_level = new int* [READINGS_SPT + 1];
+    // int father_level [numVertices][READINGS_SPT + 1];
 
     DFSGenerica(initialVertice, father_level);
 
@@ -359,7 +360,7 @@ void Grafos::DFS (int initialVertice)
     for (int i = 0; i < numVertices; i++)
     {
         cout << i + 1 << "\t";
-        cout << father_level[i][0] << "\t" << father_level[i][1];
+        cout << father_level[0][i] << "\t" << father_level[1][i];
         cout << endl;
     }
 }
