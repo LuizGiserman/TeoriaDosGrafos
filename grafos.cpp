@@ -88,6 +88,17 @@ bool Vertice::hasEdge(int numberVertice){
         return false;
 };
 
+// Components Struct Implemantation 
+
+Components::Components(){
+    size = 0;
+};
+
+void Components::InsertVertice(int Vertice){
+    listComp.push_back(Vertice);
+    size++;
+}
+
 
 /*Constructor function*/
 Grafos::Grafos(std::string fileName, int type){
@@ -136,13 +147,13 @@ int Grafos::numAdjacencyVertices(int numberVertice){
     return numAdj;
 };
 
-void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int StopVertice/*=0*/, int *diameter /*=0*/)
+void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, list<Components> listComponents,int BFStype /*=0*/, int StopVertice/*=0*/, int *diameter /*=0*/,std::list<int>::iterator *arrayPointer/* = {}*/, list<int> listVerticesforCC/*= {0}*/)
  {
      bitset<1> *matrixVertices;
      vector<int> listVertices;
      int auxVertice;
      queue<int> auxQueue; // Queue Created
-
+     Components newComponent;
      if (diameter != NULL)
         *diameter = 0;
 
@@ -159,12 +170,19 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int 
     bfsInfo[initialVertice - 1][2] = 0; // no father
 
     auxQueue.push(initialVertice); // initialVertice first element of list
+
     while(auxQueue.empty() != true)
     {
         //get first element of Queue
         auxVertice = auxQueue.front();
         //take off the first element of Queue
         auxQueue.pop();
+
+        if ( BFStype == 3){
+            listVerticesforCC.erase(arrayPointer[auxVertice - 1]);
+            newComponent.InsertVertice(auxVertice);
+        }
+
         if ( type == 0 )
         {
             // List of adjacents of Vertice
@@ -224,19 +242,22 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int 
         // if(CountDiameter == 1){
         //     Diameter = bfsInfo[auxVertice-1][1] + 1;
         // }
-        if(Stop == 1){
+        if(BFStype == 1){
             if(auxVertice == StopVertice){
                 return;
             }
         }
     }/*end while*/
+    if(BFStype == 3)
+        listComponents.push_back(newComponent);
  }
 
  void Grafos::BFS(int initialVertice){
 
      int** bfsInfo = new int* [numVertices];
+     list<Components> list;
 
-     BFSGenerica(initialVertice, bfsInfo);
+     BFSGenerica(initialVertice, bfsInfo,list);
 
     cout << "vertice\tfather\tlevel" << endl;
     for (int i = 0; i < numVertices; i++){
@@ -367,12 +388,13 @@ void Grafos::DFS (int initialVertice)
 
 void Grafos::GetDiameter(){
     int maxDiameter = 0;
+    list<Components> list;
     int diameter;
     int** bfsInfo = new int* [numVertices];
     for(int i = 0; i < numVertices; i++)
     {
         diameter = 0;
-        BFSGenerica(i + 1, bfsInfo, 0, 0, &diameter);
+        BFSGenerica(i + 1, bfsInfo,list, 0, 0, &diameter);
         if( diameter > maxDiameter)
             maxDiameter = diameter;
 
@@ -384,32 +406,56 @@ void Grafos::GetDiameter(){
 
 void Grafos::ConnectedComponents(){
 
-    vector<int> listVertices;
-    std::vector<int>::iterator arrayPointer [numVertices];
-    std::vector<int>::iterator it;
+    int auxVertice;
+    int** bfsInfo = new int* [numVertices];
+
+    list<int> listVerticesforCC;
+    list<Components> listComponents;
+    std::list<int>::iterator arrayPointer [numVertices];
+    std::list<int>::iterator it;
+    std::list<Components>::iterator it2;
 
     for(int i = 0; i < numVertices; i++)
-        listVertices.push_back(i + 1);
+        listVerticesforCC.push_back(i + 1);
 
-
-
-    for (it = listVertices.begin(); it != listVertices.end(); ++it)
+    for (it = listVerticesforCC.begin(); it != listVerticesforCC.end(); ++it)
         arrayPointer[*it - 1] = it;
 
-    listVertices.erase(arrayPointer[0]);
-    listVertices.erase(arrayPointer[2]);
-    listVertices.erase(arrayPointer[4]);
 
-    for (it = listVertices.begin(); it != listVertices.end(); ++it)
-        cout << *it << endl;
 
+    while(!listVerticesforCC.empty()){
+        auxVertice = listVerticesforCC.front();
+        listVerticesforCC.pop_front();
+
+
+            BFSGenerica(
+                auxVertice,
+                bfsInfo,
+                listComponents,
+/*BFSTyoe*/     3,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
+/*Stopvertice*/ 0,
+/*Diameter */   NULL,
+                arrayPointer,
+                listVerticesforCC
+            );
+    }
+
+        cout << "Connected Components" << endl;
+        cout << endl;
+        for (it2 = listComponents.begin(); it2 != listComponents.end(); ++it2){
+            cout << "Size:  " << it2->size << endl;
+            for (it = it2->listComp.begin(); it != it2->listComp.end(); ++it){
+                cout << *it << "" << endl;
+        }        
+    }
  }
 
   void Grafos::Distance(int firstVertice, int secondVertice){
 
      int** bfsInfo = new int* [numVertices];
+     list<Components> list;
 
-     BFSGenerica(firstVertice,bfsInfo,1,secondVertice);
+     BFSGenerica(firstVertice,bfsInfo,list,1,secondVertice);
 
         cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
         cout << endl;
