@@ -24,73 +24,67 @@ Vertice::Vertice(int type, int size){
   this->type = type;
   this->size = size;
 
-  if ( type == 0){
-      this->vertice.List = new list<int>;
-  } else if (type == 1){
-      this->vertice.Row = new bitset<1> [size];
-  }
+  if (type == 1)
+      this->adjRow = new bitset<1> [size];
 }
 
-void Vertice::setVertice(int Vertice){
+void Vertice::setVertice(int numVertice){
 
-    if ( type == 0){
-      vertice.List->push_back(Vertice);
-  } else if (type == 1){
-      vertice.Row[Vertice - 1 ].set();
-  }
+  if ( type == 0)
+    adjList.push_back(numVertice);
+  else if (type == 1)
+    adjRow[numVertice - 1 ].set();
 
 }
 
 
-list<int>* Vertice::getVerticeList(){
-    list<int>* listVertices;
-    if ( type == 0){
-      listVertices = vertice.List;
-  } else if (type == 1){
-      for (int i = 0; i < vertice.Row->size(); i++){
-          if(vertice.Row[i] == 1){
-              listVertices->push_back(i + 1);
-          }
-      }
-  }
-  return listVertices;
+vector<int> Vertice::getVerticeList(){
+    vector<int> listVertices;
+    unsigned i;
+
+    if ( type == 0)
+      listVertices = adjList;
+    else if (type == 1)
+      for (i = 0; i < adjRow->size(); i++)
+          if(adjRow[i] == 1)
+              listVertices.push_back(i + 1);
+    return listVertices;
 }
 
 /*corrigir. N precisa de ponteiro. como ja sabemos o tamanho
  * da pra botar bitset<1> RowVertices [size] direto.
  */
-bitset<1>* Vertice::getVerticeMatrix(){
-    bitset<1>* RowVertices;
-    if ( type == 0) {
-        std::list<int>::iterator it;
-        RowVertices = new bitset<1>[size];
-        for (it = vertice.List->begin(); it != vertice.List->end(); ++it){
-            RowVertices[*it - 1].set();
-        }
-    } else if (type == 1 ){
-        RowVertices = vertice.Row;
+bitset<1>* Vertice::getVerticeMatrix()
+{
+    bitset<1>* adjVertices;
+    if (type == 0)
+    {
+        std::vector<int>::iterator it;
+        adjVertices = new bitset<1>[size];
+        for (it = adjList.begin(); it != adjList.end(); ++it)
+            adjVertices[*it - 1].set();
     }
-    return RowVertices;
-
+    else if (type == 1 )
+        adjVertices = adjRow;
+    return adjVertices;
 }
 
-bool Vertice::hasEdge(int Vertice){
+bool Vertice::hasEdge(int numberVertice){
 
-    if ( type == 0){
-        list<int>::iterator it;
-        it = find(vertice.List->begin(),vertice.List->end(),Vertice);
-        if (it != vertice.List->end()){
+    if ( type == 0)
+    {
+        vector<int>::iterator it;
+        it = find(adjList.begin(), adjList.end(), numberVertice);
+        if (it != adjList.end())
             return true;
-        }
 
         return false;
-
-    } else if (type == 1){
-        if (vertice.Row[Vertice - 1] == 1){
-            return true;
-        }
     }
-
+    else if (type == 1)
+    {
+        if (adjRow[numberVertice - 1] == 1)
+            return true;
+    }
         return false;
 };
 
@@ -108,11 +102,10 @@ Grafos::Grafos(std::string fileName, int type){
 
 /* Print function, just for test it the constructor is okay */
 void Grafos::Print(){
-    if(type == 0){
-        Grafos::PrintList();
-     } else if(type == 1){
-        Grafos::PrintMatrix();
-     }
+    if(type == 0)
+      Grafos::PrintList();
+    else if(type == 1)
+      Grafos::PrintMatrix();
 };
 
 /* Print Informations function */
@@ -132,89 +125,96 @@ void Grafos::Print(){
          file << "Mediana dos Graus: " << medDegree << endl;
      }
      file.close();
-
+/***/
  };
 
 
-int Grafos::numAdjacencyVertices(int Vertice){
-    int numEdges = 0;
-    list<int>* Vertices = grafo[Vertice]->getVerticeList();
-    numEdges = Vertices->size();
-    return numEdges;
+int Grafos::numAdjacencyVertices(int numberVertice){
+    int numAdj = 0;
+    vector<int> verticeList = grafo[numberVertice].getVerticeList();
+    numAdj = verticeList.size();
+    return numAdj;
 };
 
-int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int StopVertice/*=0*/, int *diameter /*=0*/)
+void Grafos::BFSGenerica(int initialVertice, int** bfsInfo,int Stop /*=0*/, int StopVertice/*=0*/, int *diameter /*=0*/)
  {
-     bitset<1> *listVertices;
-     list<int> *matrixVertices;
+     bitset<1> *matrixVertices;
+     vector<int> listVertices;
      int auxVertice;
+     queue<int> auxQueue; // Queue Created
 
      if (diameter != NULL)
         *diameter = 0;
 
-    for (int i = 0; i < numVertices; ++i){
-        BFSinfo[i] = new int[3]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
-        BFSinfo[i][0] = 0;               // 0 é nao marcado || 1 é marcado
-        BFSinfo[i][1] = numVertices + 1; // numVertices + 1 will be treat like infinity
-        BFSinfo[i][2] = numVertices + 1; // numVertices + 1 will be treat like infinity
+    for (int i = 0; i < numVertices; ++i)
+    {
+        bfsInfo[i] = new int[3]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
+        bfsInfo[i][0] = 0;               // 0 é nao marcado || 1 é marcado
+        bfsInfo[i][1] = numVertices + 1; // numVertices + 1 will be treat like infinity
+        bfsInfo[i][2] = numVertices + 1; // numVertices + 1 will be treat like infinity
     }
 
-    BFSinfo[initialVertice - 1][0] = 1; // initialVertice marked
-    BFSinfo[initialVertice - 1][1] = 0; // root
-    BFSinfo[initialVertice - 1][2] = 0; // no father
+    bfsInfo[initialVertice - 1][0] = 1; // initialVertice marked
+    bfsInfo[initialVertice - 1][1] = 0; // root
+    bfsInfo[initialVertice - 1][2] = 0; // no father
 
-    queue<int> Queue; // Queue Created
-    Queue.push(initialVertice); // initialVertice first element of list
-    while(Queue.empty() != true){
+    auxQueue.push(initialVertice); // initialVertice first element of list
+    while(auxQueue.empty() != true)
+    {
         //get first element of Queue
-        auxVertice = Queue.front();
+        auxVertice = auxQueue.front();
         //take off the first element of Queue
-        Queue.pop();
-        if ( type == 0 ){
+        auxQueue.pop();
+        if ( type == 0 )
+        {
             // List of adjacents of Vertice
-            matrixVertices = grafo[auxVertice-1]->getVerticeList();
-            std::list<int>::iterator it;
-            for (it = matrixVertices->begin(); it != matrixVertices->end(); ++it)
+            listVertices = grafo[auxVertice-1].adjList;
+            for(auto const &it : listVertices)
             {
-                if(BFSinfo[*it - 1][0] == 0)
+                if(bfsInfo[it - 1][0] == 0)
                 {
                     //Mark Vertice
-                    BFSinfo[*it - 1][0] = 1;
+                    bfsInfo[it - 1][0] = 1;
                     //Define Level of the father as the level of father plus 1
-                    BFSinfo[*it - 1][1] = BFSinfo[auxVertice-1][1] + 1;
+                    bfsInfo[it - 1][1] = bfsInfo[auxVertice-1][1] + 1;
                     // Define Vertice as father
-                    BFSinfo[*it - 1][2] = auxVertice;
-                    Queue.push(*it);
+                    bfsInfo[it - 1][2] = auxVertice;
+                    auxQueue.push(it);
 
                     if(diameter != NULL)
                     {
-                        cout << "before Updating: " << *diameter <<" BFSinfo[*it -1][1] : " <<  BFSinfo[*it -1][1] << endl;
-                        if(*diameter < BFSinfo[*it -1][1])
-                            *diameter = BFSinfo[*it -1][1];
+                        cout << "before Updating: " << *diameter <<" bfsInfo[*it -1][1] : " <<  bfsInfo[it -1][1] << endl;
+                        if(*diameter < bfsInfo[it -1][1])
+                            *diameter = bfsInfo[it -1][1];
                         cout << "new Diameter : " << *diameter << " " << endl;
                     }
 
                 }
             }
-        } else {
+        }
+        else
+        {
             // List of adjacents of Vertice
-            listVertices = grafo[auxVertice - 1]->getVerticeMatrix();
-            for (int i = 0; i < numVertices; i++){
-                if(listVertices[i] == 1) {
-                    if(BFSinfo[i][0] == 0){
+            matrixVertices = grafo[auxVertice - 1].adjRow;
+            for (int i = 0; i < numVertices; i++)
+            {
+                if(matrixVertices[i] == 1)
+                {
+                    if(bfsInfo[i][0] == 0)
+                    {
                         //Mark Vertice
-                        BFSinfo[i][0] = 1;
+                        bfsInfo[i][0] = 1;
                         //Define Level of the father as the level of father plus 1
-                        BFSinfo[i][1] = BFSinfo[auxVertice-1][1] + 1;
+                        bfsInfo[i][1] = bfsInfo[auxVertice-1][1] + 1;
                         // Define Vertice as father
-                        BFSinfo[i][2] = auxVertice;
-                        Queue.push(i + 1);
+                        bfsInfo[i][2] = auxVertice;
+                        auxQueue.push(i + 1);
 
                         if(diameter != NULL)
                         {
                             cout << *diameter << " " << endl;
-                            if(*diameter < BFSinfo[i][1])
-                                *diameter = BFSinfo[i][1];
+                            if(*diameter < bfsInfo[i][1])
+                                *diameter = bfsInfo[i][1];
                             cout << *diameter << " " << endl;
                         }
                     }
@@ -222,27 +222,26 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
             }
         }
         // if(CountDiameter == 1){
-        //     Diameter = BFSinfo[auxVertice-1][1] + 1;
+        //     Diameter = bfsInfo[auxVertice-1][1] + 1;
         // }
         if(Stop == 1){
             if(auxVertice == StopVertice){
-                return BFSinfo;
+                return;
             }
         }
     }/*end while*/
-    return BFSinfo;
  }
 
  void Grafos::BFS(int initialVertice){
 
-     int** BFSinfo = new int* [numVertices];
+     int** bfsInfo = new int* [numVertices];
 
-     BFSinfo = BFSGenerica(initialVertice,BFSinfo);
+     BFSGenerica(initialVertice, bfsInfo);
 
     cout << "vertice\tfather\tlevel" << endl;
     for (int i = 0; i < numVertices; i++){
         cout << i + 1 << "\t";
-        cout << BFSinfo[i][2] << "\t" << BFSinfo[i][1];
+        cout << bfsInfo[i][2] << "\t" << bfsInfo[i][1];
         cout << endl;
     }
  }
@@ -258,12 +257,11 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
 
     /*Type = 0 variables*/
     /*list to get the vertice's adjacency list*/
-    list<int> *adjacents;
-    list<int>::iterator it;
+    vector<int> adjacents;
 
     /*Type = 1 variables*/
     /*adjRow to get the row of adjacencies*/
-    bitset<1>  *adjRow;
+    bitset<1> *adjRow;
 
     /*others*/
     int index;
@@ -301,16 +299,16 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
             /*marking vertice*/
             marked[auxVertice-1].set();
             /*Getting the adjacency list for the Vertice grafos[auxVertice -1]*/
-            adjacents = grafo[auxVertice - 1]->getVerticeList();
+            adjacents = grafo[auxVertice - 1].getVerticeList();
             /*for every adjacent vertice, add it to the stack*/
-            for (it = adjacents->begin(); it != adjacents->end(); it++)
+            for (auto const &it : adjacents)
             {
-              auxStack.push(*it);
-              if(father_level[*it-1][0] == -1)
+              auxStack.push(it);
+              if(father_level[it-1][0] == -1)
               {
                   /*Also, update the father and level of the adjacent vertices*/
-                  father_level [*it-1][0] = auxVertice;
-                  father_level [*it-1][1] = father_level[auxVertice-1] [1] + 1;
+                  father_level [it-1][0] = auxVertice;
+                  father_level [it-1][1] = father_level[auxVertice-1] [1] + 1;
               }
 
             }
@@ -326,7 +324,7 @@ int** Grafos::BFSGenerica(int initialVertice, int** BFSinfo,int Stop /*=0*/, int
             {
                 /*mark it*/
                 marked[auxVertice-1].set();
-                adjRow = grafo[auxVertice-1]->getVerticeMatrix();
+                adjRow = grafo[auxVertice-1].getVerticeMatrix();
 
                 /*for every adjacency*/
                 for (index = numVertices - 1; index >= 0; --index)\
@@ -369,81 +367,70 @@ void Grafos::DFS (int initialVertice)
 void Grafos::GetDiameter(){
     int maxDiameter = 0;
     int diameter;
-    int** BFSinfo = new int* [numVertices];
-    cout << "aqui ta bom" << endl;
-    for(int i = 0; i < numVertices; i++){
+    int** bfsInfo = new int* [numVertices];
+    for(int i = 0; i < numVertices; i++)
+    {
         diameter = 0;
-        cout << "index : " << i << endl;
-        BFSinfo =  BFSGenerica(i + 1, BFSinfo, 0, 0, &diameter);
-        cout << "saiu da bfs" << endl;
+        BFSGenerica(i + 1, bfsInfo, 0, 0, &diameter);
         if( diameter > maxDiameter)
             maxDiameter = diameter;
 
-        cout << "inDiameter(BFS(" << i << ")) : " << diameter << endl;
     }
-
         cout << "The diameter of the Graph is " << maxDiameter << endl;
-
 }
 
 
 
 void Grafos::ConnectedComponents(){
 
-    list<int> Vertices;
+    vector<int> listVertices;
+    std::vector<int>::iterator arrayPointer [numVertices];
+    std::vector<int>::iterator it;
 
-    for(int i = 0; i < numVertices; i++){
-        Vertices.push_back(i + 1);
-    }
+    for(int i = 0; i < numVertices; i++)
+        listVertices.push_back(i + 1);
 
-    std::list<int>::iterator arrayPointer [numVertices];
-    std::list<int>::iterator it;
-    for (it = Vertices.begin(); it != Vertices.end(); ++it){
+
+
+    for (it = listVertices.begin(); it != listVertices.end(); ++it)
         arrayPointer[*it - 1] = it;
-    }
 
-    Vertices.erase(arrayPointer[0]);
-    Vertices.erase(arrayPointer[2]);
-    Vertices.erase(arrayPointer[4]);
+    listVertices.erase(arrayPointer[0]);
+    listVertices.erase(arrayPointer[2]);
+    listVertices.erase(arrayPointer[4]);
 
-    for (it = Vertices.begin(); it != Vertices.end(); ++it){
+    for (it = listVertices.begin(); it != listVertices.end(); ++it)
         cout << *it << endl;
-    }
 
  }
 
   void Grafos::Distance(int firstVertice, int secondVertice){
 
-     int** BFSinfo = new int* [numVertices];
+     int** bfsInfo = new int* [numVertices];
 
-     BFSinfo = BFSGenerica(firstVertice,BFSinfo,1,secondVertice);
+     BFSGenerica(firstVertice,bfsInfo,1,secondVertice);
 
         cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
         cout << endl;
-        cout << "Distance:  " << BFSinfo[secondVertice - 1][1] << endl;
-        cout << "Father in Generator Tree:  "  << BFSinfo[secondVertice - 1][2] << endl;
+        cout << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
+        cout << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
  }
 
 
 
-void Grafos::createGrafo(int rows){
-    Vertice** grafo = new Vertice* [rows];
-
-    for (int i = 0; i < rows; ++i){
-        grafo[i] = new Vertice(type,rows);
-    }
-    this->grafo=grafo;
+void Grafos::createGrafo()
+{
+   Vertice *auxVertice = new Vertice(type, numVertices);
+   for (int i = 0; i < numVertices; ++i)
+       grafo.push_back(*auxVertice);
 }
 
 /* Coloca os dados no grafo */
 void Grafos::Populate()
 {
-    int numVertices;
-    int numEdges;
     int auxVertice1;
     int auxVertice2;
     std::ifstream file;
-    bitset<1>** matrix;
 
     file.open(filename);
     /*Treating the open file function*/
@@ -457,74 +444,74 @@ void Grafos::Populate()
     /*Getting the first line, which contains the info for the number of vertices*/
     file >> numVertices;
 
-    createGrafo(numVertices);
+    createGrafo();
 
 
     /*Reading the edges. format: "Vertice1 Vertice2"*/
     while (file >> auxVertice1 >> auxVertice2)
     {
-        grafo[auxVertice1-1]->setVertice(auxVertice2);
-        grafo[auxVertice2-1]->setVertice(auxVertice1);
+        grafo[auxVertice1-1].setVertice(auxVertice2);
+        grafo[auxVertice2-1].setVertice(auxVertice1);
         numEdges ++;
     }
 
     file.close();
-
-    this -> numVertices = numVertices;
-    this -> numEdges = numEdges;
 }
 
- void Grafos::PrintMatrix(){
-     for(int i = 0; i < numVertices; ++i){
+ void Grafos::PrintMatrix()
+ {
+     bitset<1>* auxRow;
+     for(int i = 0; i < numVertices; ++i)
+     {
          cout << i + 1 << "  ";
-         bitset<1>* Row;
-         Row = grafo[i]->getVerticeMatrix();
-         for(int j = 0; j < numVertices; ++j ){
-             cout << Row[j] << " ";
-         }
+         auxRow = grafo[i].getVerticeMatrix();
+         for(int j = 0; j < numVertices; ++j)
+             cout << auxRow[j] << " ";
          cout << endl;
      }
  }
 
-  void Grafos::PrintList(){
-     for(int i = 0; i < numVertices; ++i){
+  void Grafos::PrintList()
+  {
+    vector<int> auxList;
+     for(int i = 0; i < numVertices; ++i)
+       {
          cout << i + 1 << "  ";
-         list<int>* List;
-         List = grafo[i]->getVerticeList();
-         for(list<int>::iterator i = List->begin(); i != List->end(); ++i ){
+         auxList = grafo[i].getVerticeList();
+         for(vector<int>::iterator i = auxList.begin(); i != auxList.end(); ++i )
              cout << *i << " ";
-         }
          cout << endl;
      }
  }
 
 
 void Grafos::GetInformation() {
-    vector<int> Degrees;
-    int Degree;
+    vector<int> degrees;
+    int degree;
     int totalDegrees = 0;
     int actualVertice = 0;
-    for(int i = actualVertice; i < numVertices; ++i ){
-        Degree = numAdjacencyVertices(i);
-        totalDegrees += Degree;
-        Degrees.push_back(Degree);
+    for(int i = actualVertice; i < numVertices; ++i )
+    {
+        degree = numAdjacencyVertices(i);
+        totalDegrees += degree;
+        degrees.push_back(degree);
     }
 
-     sort(Degrees.begin(),Degrees.end());
+     sort(degrees.begin(), degrees.end());
 
-     if( Degrees.size()%2 == 0){
-        int degree1 = Degrees[Degrees.size()/2];
-        int degree2 = Degrees[Degrees.size()/2+1];
+     if(degrees.size()%2 == 0)
+     {
+        int degree1 = degrees[degrees.size()/2];
+        int degree2 = degrees[degrees.size()/2+1];
 
         this->avgDegree = (degree1 + degree2)/2;
     }
-    else {
-        this->avgDegree = Degrees[(Degrees.size()/2)+1];
-    }
+    else
+        this->avgDegree = degrees[(degrees.size()/2)+1];
 
 
-     this->minDegree = Degrees.front();
-     this->maxDegree = Degrees.back();
+     this->minDegree = degrees.front();
+     this->maxDegree = degrees.back();
      this->medDegree = totalDegrees/numVertices;
 
 };

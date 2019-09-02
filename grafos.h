@@ -25,24 +25,21 @@ typedef unsigned char BYTE;
 
 using namespace std;
 
-struct Verticedata {
-  union {
-      bitset<1>* Row;
-      list<int>* List;
-    };
-};
 
 class Vertice
 {
+public:
+
     int type;
     int size;
-    Verticedata vertice;
+    vector<int> adjList; /*type = 0*/
+    bitset<1>* adjRow = NULL; /*type = 1*/
 
-  public:
+
     Vertice(int type, int size);
     void setVertice(int Vertice);
     bitset<1>* getVerticeMatrix();
-    list<int>* getVerticeList();
+    vector<int> getVerticeList();
     bool hasEdge(int Vertice);
 };
 
@@ -55,25 +52,26 @@ public:
   int type;
   int numVertices;
   int numEdges;
-  Vertice** grafo;
+  vector<Vertice> grafo;
   int maxDegree;
   int minDegree;
   int avgDegree;
   int medDegree;
 
-  void createGrafo(int rows);
+  void createGrafo();
   void Populate();
   void Print();
   int numAdjacencyVertices(int Vertice);
-  list<int> Edges(int Vertice);
+  vector<int> Edges(int Vertice);
   void PrintInformation();
   void GetDiameter();
   void ConnectedComponents();
   void Distance(int firstVertice, int secondVertice);
   void BFS(int initialVertice);
   void DFS(int initialVertice);
+
 private:
-  int** BFSGenerica(
+  void BFSGenerica(
     int initialVertice,
     int** BFSinfo,
     int Stop = 0,
