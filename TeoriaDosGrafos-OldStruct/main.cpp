@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include <ctime>
 
 using namespace std;
 
@@ -28,7 +29,10 @@ void process_mem_usage(double& vm_usage, double& resident_set)
 
 int main(){
   Grafos grafo = Grafos("as_graph.txt",0);
+  clock_t start = clock();
   grafo.BFS(1);
+  clock_t end = clock();
+  cout<< (double)(end-start)/CLOCKS_PER_SEC<<endl;
   // grafo.ConnectedComponents();
 
 
