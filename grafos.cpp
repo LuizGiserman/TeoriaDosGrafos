@@ -287,7 +287,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
      BFSGenerica(initialVertice, bfsInfo);
 
     if (search)
-    { 
+    {
       string fileoutput = "./pais102030" + filename;
       file.open(fileoutput);
       file << "filename: " << filename << endl;
@@ -321,7 +321,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
     /*Type = 1 variables*/
     /*adjRow to get the row of adjacencies*/
-    bitset<1> *adjRow;
+    bitset<1>  *adjRow;
 
     /*others*/
     int index;
@@ -332,15 +332,16 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
      */
     for (index = 0; index < numVertices; index++)
     {
+      // marked [index] = 0;
       father_level[index] = new int [READINGS_SPT];
-      father_level [0][index] = -1;
-      father_level [1][index] = -1;
+      father_level [index][0] = -1;
+      father_level [index][1] = -1;
     }
+    
     memset(marked, 0, numVertices);
-
     /*setting root and level of the starting point*/
-    father_level [0][initialVertice-1] = 0;
-    father_level [1][initialVertice-1] = 0;
+    father_level [initialVertice-1][0] = 0;
+    father_level [initialVertice-1][1] = 0;
     /*puts the value of the initial vertice in the stack*/
     auxStack.push(initialVertice);
 
@@ -361,14 +362,14 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
             /*Getting the adjacency list for the Vertice grafos[auxVertice -1]*/
             adjacents = grafo[auxVertice - 1].getVerticeList();
             /*for every adjacent vertice, add it to the stack*/
-            for (auto const &it : adjacents)
+            for (auto const &it: adjacents)
             {
               auxStack.push(it);
-              if(father_level[0][it-1] == -1)
+              if(father_level[it-1][0] == -1)
               {
                   /*Also, update the father and level of the adjacent vertices*/
-                  father_level [0][it-1] = auxVertice;
-                  father_level [1][it-1] = father_level[auxVertice-1] [1] + 1;
+                  father_level [it-1][0] = auxVertice;
+                  father_level [it-1][1] = father_level[auxVertice-1] [1] + 1;
               }
 
             }
@@ -394,10 +395,10 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
                        /*put every adjacency in the stack*/
                        /*if it doesn't have a father, add it*/
                        auxStack.push(index + 1);
-                       if (father_level[0][index] == -1)
+                       if (father_level[index][0] == -1)
                        {
-                           father_level[0][index] = auxVertice;
-                           father_level[1][index] = father_level[auxVertice-1][1] + 1;
+                           father_level[index][0] = auxVertice;
+                           father_level[index][1] = father_level[auxVertice-1][1] + 1;
                        }
 
                    }
@@ -411,16 +412,15 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 void Grafos::DFS (int initialVertice)
 {
 
-    int** father_level = new int* [READINGS_SPT + 1];
-    // int father_level [numVertices][READINGS_SPT + 1];
+    int** father_level = new int* [numVertices];
 
     DFSGenerica(initialVertice, father_level);
 
-    cout << "vertice\tfather\tlevel\t" <<endl;
+    cout << "vertice\tfather\tlevel\t" << endl;
     for (int i = 0; i < numVertices; i++)
     {
         cout << i + 1 << "\t";
-        cout << father_level[0][i] << "\t" << father_level[1][i];
+        cout << father_level[i][0] << "\t" << father_level[i][1];
         cout << endl;
     }
 }
@@ -579,6 +579,8 @@ void Grafos::Populate()
         grafo[auxVertice2-1].setVertice(auxVertice1);
         numEdges ++;
     }
+
+    cout << grafo[1].adjList.front() << " " << endl;
 
     file.close();
 }
