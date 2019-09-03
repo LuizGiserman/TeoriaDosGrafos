@@ -43,7 +43,8 @@ void ThousandsBDFS(Grafos grafo_atual, int type)
 }
 
 void GetFathers(Grafos grafo_atual)
-{
+{   
+  //teste
     int index;
     for (index = 1; index < 4; index++)
       grafo_atual.BFS(index, 1);
@@ -51,25 +52,26 @@ void GetFathers(Grafos grafo_atual)
 }
 
 int main(){
-  //
-  // std::chrono::steady_clock::time_point start;
-  // std::chrono::steady_clock::time_point end;
-  // ofstream file;
-  // double vm, rss;
-  //
-  // file.open("./times.txt");
+  
+   std::chrono::steady_clock::time_point start;
+   std::chrono::steady_clock::time_point end;
+   ofstream file;
+   double vm, rss;
+  
+   file.open("./times.txt");
   /*as_graph*/
-  /*
+  
     Grafos grafo_as_graph = Grafos("as_graph.txt",0);
     file << "FileName: " << grafo_as_graph.filename << endl;
     process_mem_usage(vm, rss);
     file << "Resident set size: " << rss << endl;
+    file << "VM: " << vm << endl;
     start = std::chrono::steady_clock::now();
-    ThousandsBDFS(grafo_as_graph, 0);
+    //ThousandsBDFS(grafo_as_graph, 0);
     end = std::chrono::steady_clock::now();
     file << "1000BFS: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << endl;
     start = std::chrono::steady_clock::now();
-    // ThousandsBDFS(grafo_as_graph, 1);
+    ThousandsBDFS(grafo_as_graph, 1);
     end = std::chrono::steady_clock::now();
     file << "1000DFS: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << endl;
     GetFathers(grafo_as_graph);
@@ -78,28 +80,29 @@ int main(){
     grafo_as_graph.Distance(20, 30, 1);
     grafo_as_graph.ConnectedComponents(1);
     grafo_as_graph.GetDiameter();
-  */
-    // Grafos grafo_dbpl = Grafos("as_dbpl.txt",0);
-    // file << "FileName: " << grafo_dbpl.filename << endl;
-    // process_mem_usage(vm, rss);
-    // file << "Resident set size: " << rss << endl;
-    // start = std::chrono::steady_clock::now();
-    // ThousandsBDFS(grafo_dbpl, 0);
-    // end = std::chrono::steady_clock::now();
-    // file << "1000BFS: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()  << " µs" << endl;
-    // start = std::chrono::steady_clock::now();
-    // // ThousandsBDFS(grafo_dbpl, 1);
-    // end = std::chrono::steady_clock::now();
-    // file << "1000DFS: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << endl;
-    // GetFathers(grafo_dbpl);
-    // grafo_dbpl.Distance(10, 20, 1);
-    // grafo_dbpl.Distance(10, 30, 1);
-    // grafo_dbpl.Distance(20, 30, 1);
-    // grafo_dbpl.ConnectedComponents(1);
-    // grafo_dbpl.GetDiameter();
+  
+   /*
+    Grafos grafo_dbpl = Grafos("dblp.txt",0);
+    file << "FileName: " << grafo_dbpl.filename << endl;
+    process_mem_usage(vm, rss);
+    file << "Resident set size: " << rss << endl;
+     start = std::chrono::steady_clock::now();
+     //ThousandsBDFS(grafo_dbpl, 0);
+     end = std::chrono::steady_clock::now();
+     file << "1000BFS: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()  << " µs" << endl;
+     start = std::chrono::steady_clock::now();
+     ThousandsBDFS(grafo_dbpl, 1);
+     end = std::chrono::steady_clock::now();
+     file << "1000DFS: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << endl;
+     GetFathers(grafo_dbpl);
+     grafo_dbpl.Distance(10, 20, 1);
+     grafo_dbpl.Distance(10, 30, 1);
+     grafo_dbpl.Distance(20, 30, 1);
+     grafo_dbpl.ConnectedComponents(1);
+     grafo_dbpl.GetDiameter();
 
-  /*
-    Grafos grafo_live_journal = Grafos("as_live_journal.txt",0);
+/*
+    Grafos grafo_live_journal = Grafos("live_journal.txt",0);
     file << "FileName: " << grafo_live_journal.filename << endl;
     process_mem_usage(vm, rss);
     file << "Resident set size: " << rss << endl;
@@ -119,9 +122,6 @@ int main(){
     grafo_live_journal.GetDiameter();
 
   */
-
-  Grafos grafo = Grafos("as_graph.txt", 0);
-  grafo.DFS(2);
 
   return 0;
 }

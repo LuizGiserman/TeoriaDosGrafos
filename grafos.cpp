@@ -337,7 +337,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
       father_level [index][0] = -1;
       father_level [index][1] = -1;
     }
-
+    
     memset(marked, 0, numVertices);
     /*setting root and level of the starting point*/
     father_level [initialVertice-1][0] = 0;
@@ -411,18 +411,10 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
 void Grafos::DFS (int initialVertice)
 {
-
     int** father_level = new int* [numVertices];
 
     DFSGenerica(initialVertice, father_level);
 
-    cout << "vertice\tfather\tlevel\t" << endl;
-    for (int i = 0; i < numVertices; i++)
-    {
-        cout << i + 1 << "\t";
-        cout << father_level[i][0] << "\t" << father_level[i][1];
-        cout << endl;
-    }
 }
 
 void Grafos::GetDiameter(){
