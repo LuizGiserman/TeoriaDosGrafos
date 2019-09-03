@@ -51,6 +51,8 @@ class Components
     void InsertVertice(int Vertice);
     int size;
     list<int> listComp;
+
+    bool compare(const Components &comp1, const Components &comp2);
 };
 
 /*listVerticesforCC - int dos index*/

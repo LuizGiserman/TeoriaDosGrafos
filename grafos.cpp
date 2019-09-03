@@ -104,6 +104,10 @@ void Components::InsertVertice(int Vertice){
     size++;
 }
 
+bool compare(const Components &comp1, const Components &comp2){
+    return comp1.size > comp2.size;
+}
+
 /************************************************************/
 
 /*Constructor function*/
@@ -228,10 +232,8 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
                     if(diameter != NULL)
                     {
-                        cout << "before Updating: " << *diameter <<" bfsInfo[*it -1][1] : " <<  bfsInfo[it -1][1] << endl;
                         if(*diameter < bfsInfo[it -1][1])
                             *diameter = bfsInfo[it -1][1];
-                        cout << "new Diameter : " << *diameter << " " << endl;
                     }
 
                 }
@@ -285,8 +287,9 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
      BFSGenerica(initialVertice, bfsInfo);
 
     if (search)
-    {
-      file.open("./pais102030.txt");
+    { 
+      string fileoutput = "./pais102030" + filename;
+      file.open(fileoutput);
       file << "filename: " << filename << endl;
       file << "initialVertice: " << initialVertice << endl;
       file << "vertice\t father\t" << endl;
@@ -437,9 +440,10 @@ void Grafos::GetDiameter(){
             maxDiameter = diameter;
 
     }
-        file.open("./diameter.txt");
+        string fileoutput = "./DiameterIN" + filename;
+        file.open(fileoutput);
         file << "filename: " << filename << endl;
-        cout << "The diameter of the Graph is " << maxDiameter << endl;
+        file << "The diameter of the Graph is " << maxDiameter << endl;
 }
 
 
@@ -494,14 +498,12 @@ void Grafos::ConnectedComponents(int search){
     }
 
     // Sorting List using Lambda Function as comparator
-    listComponents.sort([](const Components &comp1, const Components &comp2)
-    		{
-    			return comp1.size > comp2.size;
-    		});
+    listComponents.sort(compare);
 
     if (search == 1)
     {
-      file.open("./cc.txt");
+    string fileoutput = "./CCin" + filename;
+      file.open(fileoutput);
       file << "filename : " << filename << endl;
       for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
       {
@@ -510,6 +512,7 @@ void Grafos::ConnectedComponents(int search){
         {
           file << *itVertices << "->";
         }
+        file << endl;
         file << endl;
       }
     }
@@ -526,7 +529,8 @@ void Grafos::Distance(int firstVertice, int secondVertice, int search)
 
    if(search)
    {
-     file.open("./distance.txt");
+    string fileoutput = "./distancein" + filename + "from" + to_string(firstVertice) + "to" + to_string(secondVertice) + ".txt";
+     file.open(fileoutput);
      file << "fileName: " << filename;
      file << "BFS from " << firstVertice << " to " << secondVertice << endl;
      file << endl;
