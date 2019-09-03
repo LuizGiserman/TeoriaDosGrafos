@@ -62,9 +62,9 @@ vector<int> Vertice::getVerticeList(){
 bitset<1>* Vertice::getVerticeMatrix()
 {
     bitset<1>* adjVertices;
+    std::vector<int>::iterator it;
     if (type == 0)
     {
-        std::vector<int>::iterator it;
         adjVertices = new bitset<1>[size];
         for (it = adjList.begin(); it != adjList.end(); ++it)
             adjVertices[*it - 1].set();
@@ -75,10 +75,9 @@ bitset<1>* Vertice::getVerticeMatrix()
 }
 
 bool Vertice::hasEdge(int numberVertice){
-
+  vector<int>::iterator it;
     if ( type == 0)
     {
-        vector<int>::iterator it;
         it = find(adjList.begin(), adjList.end(), numberVertice);
         if (it != adjList.end())
             return true;
@@ -160,23 +159,6 @@ int Grafos::numAdjacencyVertices(int numberVertice){
     numAdj = verticeList.size();
     return numAdj;
 };
-
-/*overloading*/
-// void Grafos::BFSGenerica (int initialVertice, int** BFSinfo,
-//                          Components *auxComponent,
-//                          int BFStype,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
-//                          int StopVertice, int *diameter,
-//                          std::list<int>::iterator *arrayPointer)
-// {
-//  list<int> listVerticesforCC;
-//  BFSGenerica (initialVertice, BFSinfo,
-//                            auxComponent,
-//                            BFStype,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
-//                            StopVertice, int diameter,
-//                            arrayPointer,
-//                            listVerticesforCC)
-//
-// }
 
 void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxComponent, int BFStype /*=0*/, int StopVertice/*=0*/, int *diameter /*=0*/,std::list<int>::iterator *arrayPointer/* = {}*/, list<int> *listVerticesforCC/*= {0}*/)
  {
@@ -277,9 +259,11 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
             }
         }
     }/*end while*/
+    delete matrixVertices;
  }
 
- void Grafos::BFS(int initialVertice, int search){
+ void Grafos::BFS(int initialVertice, int search)
+ {
 
      int** bfsInfo = new int* [numVertices];
      ofstream file;
@@ -296,13 +280,10 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
       file << "10\t" << bfsInfo[10][2] << "\t" << endl;
       file << "20\t" << bfsInfo[20][2] << "\t" << endl;
       file << "30\t" << bfsInfo[30][2] << "\t" << endl;
+      file.close();
     }
-    // cout << "vertice\tfather\tlevel" << endl;
-    // for (int i = 0; i < numVertices; i++){
-    //     cout << i + 1 << "\t";
-    //     cout << bfsInfo[i][2] << "\t" << bfsInfo[i][1];
-    //     cout << endl;
-    //}
+
+    delete [] bfsInfo;
  }
 
 
@@ -337,7 +318,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
       father_level [index][0] = -1;
       father_level [index][1] = -1;
     }
-    
+
     memset(marked, 0, numVertices);
     /*setting root and level of the starting point*/
     father_level [initialVertice-1][0] = 0;
@@ -360,7 +341,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
             /*marking vertice*/
             marked[auxVertice-1].set();
             /*Getting the adjacency list for the Vertice grafos[auxVertice -1]*/
-            adjacents = grafo[auxVertice - 1].getVerticeList();
+            adjacents = grafo[auxVertice - 1].adjList;
             /*for every adjacent vertice, add it to the stack*/
             for (auto const &it: adjacents)
             {
@@ -379,13 +360,12 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
         /*if matrix*/
         else if(type == 1)
         {
-            cout << auxVertice << endl;
             /*if u is not marked*/
             if (marked[auxVertice-1].test(0) == false)
             {
                 /*mark it*/
                 marked[auxVertice-1].set();
-                adjRow = grafo[auxVertice-1].getVerticeMatrix();
+                adjRow = grafo[auxVertice-1].adjRow;
 
                 /*for every adjacency*/
                 for (index = numVertices - 1; index >= 0; --index)\
@@ -415,11 +395,13 @@ void Grafos::DFS (int initialVertice)
 
     DFSGenerica(initialVertice, father_level);
 
+    delete [] father_level;
 }
 
 void Grafos::GetDiameter(){
 
     ofstream file;
+    string fileoutput = "./DiameterIN" + filename;
 
     int maxDiameter = 0;
     int diameter;
@@ -432,10 +414,12 @@ void Grafos::GetDiameter(){
             maxDiameter = diameter;
 
     }
-        string fileoutput = "./DiameterIN" + filename;
         file.open(fileoutput);
         file << "filename: " << filename << endl;
         file << "The diameter of the Graph is " << maxDiameter << endl;
+        file.close();
+
+    delete [] bfsInfo;
 }
 
 
@@ -443,6 +427,7 @@ void Grafos::GetDiameter(){
 void Grafos::ConnectedComponents(int search){
 
     ofstream file;
+    string fileoutput = "./CCin" + filename;
 
     int auxVertice;
     int** bfsInfo = new int* [numVertices];
@@ -494,7 +479,6 @@ void Grafos::ConnectedComponents(int search){
 
     if (search == 1)
     {
-    string fileoutput = "./CCin" + filename;
       file.open(fileoutput);
       file << "filename : " << filename << endl;
       for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
@@ -507,28 +491,28 @@ void Grafos::ConnectedComponents(int search){
         file << endl;
         file << endl;
       }
+      file.close();
     }
 
-
+    delete [] bfsInfo;
  }
 
 void Grafos::Distance(int firstVertice, int secondVertice, int search)
 {
-
+   string fileoutput = "./distancein" + filename + "from" + to_string(firstVertice) + "to" + to_string(secondVertice) + ".txt";
    int** bfsInfo = new int* [numVertices];
    ofstream file;
    BFSGenerica(firstVertice, bfsInfo, NULL , 1, secondVertice, NULL, NULL, NULL);
 
    if(search)
    {
-    string fileoutput = "./distancein" + filename + "from" + to_string(firstVertice) + "to" + to_string(secondVertice) + ".txt";
      file.open(fileoutput);
      file << "fileName: " << filename;
      file << "BFS from " << firstVertice << " to " << secondVertice << endl;
      file << endl;
      file << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
      file << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
-
+     file.close();
    }
 
 }
@@ -571,8 +555,6 @@ void Grafos::Populate()
         grafo[auxVertice2-1].setVertice(auxVertice1);
         numEdges ++;
     }
-
-    cout << grafo[1].adjList.front() << " " << endl;
 
     file.close();
 }
