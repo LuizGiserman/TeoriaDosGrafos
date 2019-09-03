@@ -515,6 +515,8 @@ void Grafos::Distance(int firstVertice, int secondVertice, int search)
      file.close();
    }
 
+   delete [] bfsInfo;
+
 }
 
 
