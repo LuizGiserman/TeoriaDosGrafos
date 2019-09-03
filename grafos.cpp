@@ -337,7 +337,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
       father_level [index][0] = -1;
       father_level [index][1] = -1;
     }
-    
+
     memset(marked, 0, numVertices);
     /*setting root and level of the starting point*/
     father_level [initialVertice-1][0] = 0;

@@ -91,15 +91,6 @@ public:
   void PrintMatrix();
 
 private:
-  // void BFSGenerica(
-  //   int initialVertice,
-  //   int** BFSinfo,
-  //   Components *auxComponent = NULL,
-  //   int BFStype = 0,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
-  //   int StopVertice = 0,
-  //   int *diameter = NULL,
-  //   std::list<int>::iterator *arrayPointer = NULL
-  // );
 
   void BFSGenerica(
     int initialVertice,
