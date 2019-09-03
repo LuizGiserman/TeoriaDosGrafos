@@ -43,7 +43,7 @@ public:
     bool hasEdge(int Vertice);
 };
 
-class Components 
+class Components
 {
   public:
     Components();
@@ -52,11 +52,17 @@ class Components
     list<int> listComp;
 };
 
+/*listVerticesforCC - int dos index*/
+/*arrayPointer [numVertices] - aponta pros index*/
+/*listComponents??*/
+
+/*newComponent??*/
+
 class Grafos
 {
 
 public:
-  Grafos(string, int type);
+  Grafos(string fileName, int type);
   string filename;
   int type;
   int numVertices;
@@ -80,16 +86,28 @@ public:
   void DFS(int initialVertice);
 
 private:
+  // void BFSGenerica(
+  //   int initialVertice,
+  //   int** BFSinfo,
+  //   Components *auxComponent = NULL,
+  //   int BFStype = 0,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
+  //   int StopVertice = 0,
+  //   int *diameter = NULL,
+  //   std::list<int>::iterator *arrayPointer = NULL
+  // );
+
   void BFSGenerica(
     int initialVertice,
-    int** BFSinfo,
-    list<Components> listComponents, // Não consegui botar como default parameter, vou botar para todas as unfçoes enviarem esse parametro, mas ele nao vai fazer nada sem ser no connected components
+    int **BFSinfo,
+    Components *auxComponent = NULL,
     int BFStype = 0,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
     int StopVertice = 0,
     int *diameter = NULL,
     std::list<int>::iterator *arrayPointer = NULL,
-    list<int> listVerticesforCC = list<int>(0)
-    );
+    list<int> *listVerticesforCC = NULL
+  );
+
+
 
     void DFSGenerica(
         int initialVertice,

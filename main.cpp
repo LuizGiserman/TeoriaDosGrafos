@@ -1,8 +1,8 @@
-#include "grafos.h"
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
 #include <ctime>
+#include "grafos.h"
 
 using namespace std;
 
@@ -28,7 +28,7 @@ void process_mem_usage(double& vm_usage, double& resident_set)
 }
 
 int main(){
-  
+
   Grafos grafo = Grafos("grafoteste.txt",0);
   clock_t start = clock();
   grafo.ConnectedComponents();
