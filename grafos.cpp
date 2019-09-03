@@ -28,6 +28,11 @@ Vertice::Vertice(int type, int size){
       this->adjRow = new bitset<1> [size];
 }
 
+Vertice::~Vertice()
+{
+  delete [] adjRow;
+}
+
 void Vertice::setVertice(int numVertice){
 
   if ( type == 0)
@@ -99,6 +104,7 @@ void Components::InsertVertice(int Vertice){
     size++;
 }
 
+/************************************************************/
 
 /*Constructor function*/
 Grafos::Grafos(std::string fileName, int type){
@@ -110,6 +116,10 @@ Grafos::Grafos(std::string fileName, int type){
 
     Grafos::Populate();
 };
+
+Grafos::~Grafos()
+{
+}
 
 /* Print function, just for test it the constructor is okay */
 void Grafos::Print(){
@@ -267,18 +277,29 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
     }/*end while*/
  }
 
- void Grafos::BFS(int initialVertice){
+ void Grafos::BFS(int initialVertice, int search){
 
      int** bfsInfo = new int* [numVertices];
+     ofstream file;
 
      BFSGenerica(initialVertice, bfsInfo);
 
-    cout << "vertice\tfather\tlevel" << endl;
-    for (int i = 0; i < numVertices; i++){
-        cout << i + 1 << "\t";
-        cout << bfsInfo[i][2] << "\t" << bfsInfo[i][1];
-        cout << endl;
+    if (search)
+    {
+      file.open("./pais102030.txt");
+      file << "filename: " << filename << endl;
+      file << "initialVertice: " << initialVertice << endl;
+      file << "vertice\t father\t" << endl;
+      file << "10\t" << bfsInfo[10][2] << "\t" << endl;
+      file << "20\t" << bfsInfo[20][2] << "\t" << endl;
+      file << "30\t" << bfsInfo[30][2] << "\t" << endl;
     }
+    // cout << "vertice\tfather\tlevel" << endl;
+    // for (int i = 0; i < numVertices; i++){
+    //     cout << i + 1 << "\t";
+    //     cout << bfsInfo[i][2] << "\t" << bfsInfo[i][1];
+    //     cout << endl;
+    //}
  }
 
 
@@ -402,6 +423,9 @@ void Grafos::DFS (int initialVertice)
 }
 
 void Grafos::GetDiameter(){
+
+    ofstream file;
+
     int maxDiameter = 0;
     int diameter;
     int** bfsInfo = new int* [numVertices];
@@ -413,12 +437,16 @@ void Grafos::GetDiameter(){
             maxDiameter = diameter;
 
     }
+        file.open("./diameter.txt");
+        file << "filename: " << filename << endl;
         cout << "The diameter of the Graph is " << maxDiameter << endl;
 }
 
 
 
-void Grafos::ConnectedComponents(){
+void Grafos::ConnectedComponents(int search){
+
+    ofstream file;
 
     int auxVertice;
     int** bfsInfo = new int* [numVertices];
@@ -471,29 +499,43 @@ void Grafos::ConnectedComponents(){
     			return comp1.size > comp2.size;
     		});
 
-    for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
+    if (search == 1)
     {
-      cout << "Size: "<< itComponents->size << endl;
-      for(itVertices = itComponents->listComp.begin(); itVertices != itComponents->listComp.end(); ++itVertices)
+      file.open("./cc.txt");
+      file << "filename : " << filename << endl;
+      for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
       {
-        cout << *itVertices << "->";
+        file << "Size: "<< itComponents->size << endl;
+        for(itVertices = itComponents->listComp.begin(); itVertices != itComponents->listComp.end(); ++itVertices)
+        {
+          file << *itVertices << "->";
+        }
+        file << endl;
       }
-      cout << endl;
     }
 
+
  }
 
-  void Grafos::Distance(int firstVertice, int secondVertice){
+void Grafos::Distance(int firstVertice, int secondVertice, int search)
+{
 
-     int** bfsInfo = new int* [numVertices];
+   int** bfsInfo = new int* [numVertices];
+   ofstream file;
+   BFSGenerica(firstVertice, bfsInfo, NULL , 1, secondVertice, NULL, NULL, NULL);
 
-     BFSGenerica(firstVertice, bfsInfo, NULL , 1, secondVertice, NULL, NULL, NULL);
+   if(search)
+   {
+     file.open("./distance.txt");
+     file << "fileName: " << filename;
+     file << "BFS from " << firstVertice << " to " << secondVertice << endl;
+     file << endl;
+     file << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
+     file << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
 
-        cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
-        cout << endl;
-        cout << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
-        cout << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
- }
+   }
+
+}
 
 
 
@@ -539,13 +581,12 @@ void Grafos::Populate()
 
  void Grafos::PrintMatrix()
  {
-     bitset<1>* auxRow;
      for(int i = 0; i < numVertices; ++i)
      {
          cout << i + 1 << "  ";
-         auxRow = grafo[i].getVerticeMatrix();
          for(int j = 0; j < numVertices; ++j)
-             cout << auxRow[j] << " ";
+           cout << grafo[i].getVerticeMatrix()[j] << " ";
+
          cout << endl;
      }
  }

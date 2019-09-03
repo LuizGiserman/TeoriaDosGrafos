@@ -37,6 +37,7 @@ public:
 
 
     Vertice(int type, int size);
+    ~Vertice();
     void setVertice(int Vertice);
     bitset<1>* getVerticeMatrix();
     vector<int> getVerticeList();
@@ -63,6 +64,7 @@ class Grafos
 
 public:
   Grafos(string fileName, int type);
+  ~Grafos();
   string filename;
   int type;
   int numVertices;
@@ -80,10 +82,11 @@ public:
   vector<int> Edges(int Vertice);
   void PrintInformation();
   void GetDiameter();
-  void ConnectedComponents();
-  void Distance(int firstVertice, int secondVertice);
-  void BFS(int initialVertice);
+  void ConnectedComponents(int search);
+  void Distance(int firstVertice, int secondVertice, int search);
+  void BFS(int initialVertice, int search);
   void DFS(int initialVertice);
+  void PrintMatrix();
 
 private:
   // void BFSGenerica(
@@ -114,7 +117,6 @@ private:
         int **father_level);
 
     void GetInformation();
-    void PrintMatrix();
     void PrintList();
 };
 
