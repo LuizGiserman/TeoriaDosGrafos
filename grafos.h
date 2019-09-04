@@ -87,7 +87,7 @@ public:
   void ConnectedComponents(int search);
   void Distance(int firstVertice, int secondVertice, int search);
   void BFS(int initialVertice, int search);
-  void DFS(int initialVertice);
+  void DFS(int initialVertice, int search);
   void PrintMatrix();
 
 private:

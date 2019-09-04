@@ -272,7 +272,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
     if (search)
     {
-      string fileoutput = "./pais102030" + filename;
+      string fileoutput = "./paisInBFS102030" + filename;
       file.open(fileoutput);
       file << "filename: " << filename << endl;
       file << "initialVertice: " << initialVertice << endl;
@@ -392,11 +392,25 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
   }
 
-void Grafos::DFS (int initialVertice)
+void Grafos::DFS (int initialVertice, int search)
 {
     int** father_level = new int* [numVertices];
+    ofstream file;
 
     DFSGenerica(initialVertice, father_level);
+
+    if (search)
+    {
+      string fileoutput = "./paisInDFS102030" + filename;
+      file.open(fileoutput);
+      file << "filename: " << filename << endl;
+      file << "initialVertice: " << initialVertice << endl;
+      file << "vertice\t father\t" << endl;
+      file << "10\t" << father_level[10][2] << "\t" << endl;
+      file << "20\t" << father_level[20][2] << "\t" << endl;
+      file << "30\t" << father_level[30][2] << "\t" << endl;
+      file.close();
+    }
 
     for(int i = 0; i < numVertices; ++i)
         delete[] father_level[i];
