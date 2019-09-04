@@ -174,8 +174,8 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
     {
         bfsInfo[i] = new int[READINGS_SPT + 1]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
         bfsInfo[i][0] = 0;               // 0 é nao marcado || 1 é marcado
-        bfsInfo[i][1] = numVertices + 1; // numVertices + 1 will be treat like infinity
-        bfsInfo[i][2] = numVertices + 1; // numVertices + 1 will be treat like infinity
+        bfsInfo[i][1] = -1; // numVertices + 1 will be treat like infinity
+        bfsInfo[i][2] = -1; // numVertices + 1 will be treat like infinity
     }
 
     bfsInfo[initialVertice - 1][0] = 1; // initialVertice marked
@@ -211,7 +211,10 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
                     // Define Vertice as father
                     bfsInfo[it - 1][2] = auxVertice;
                     auxQueue.push(it);
-
+                    if (it == 3)
+                    {
+                      cout << "Oi" << endl;
+                    }
                     if(diameter != NULL)
                     {
                         if(*diameter < bfsInfo[it -1][1])
@@ -259,7 +262,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
             }
         }
     }/*end while*/
-    
+
  }
 
  void Grafos::BFS(int initialVertice, int search)
@@ -272,14 +275,14 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
     if (search)
     {
-      string fileoutput = "./paisInBFS102030" + filename;
+      string fileoutput = "./paisInBFS102030" + to_string(initialVertice) + filename;
       file.open(fileoutput);
       file << "filename: " << filename << endl;
       file << "initialVertice: " << initialVertice << endl;
       file << "vertice\t father\t" << endl;
-      file << "10\t" << bfsInfo[10][2] << "\t" << endl;
-      file << "20\t" << bfsInfo[20][2] << "\t" << endl;
-      file << "30\t" << bfsInfo[30][2] << "\t" << endl;
+      file << "10\t" << bfsInfo[10-1][2] << "\t" << endl;
+      file << "20\t" << bfsInfo[20-1][2] << "\t" << endl;
+      file << "30\t" << bfsInfo[30-1][2] << "\t" << endl;
       file.close();
     }
 
@@ -292,8 +295,8 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
  void Grafos::DFSGenerica(int initialVertice, int **father_level)
   {
     /*array to mark the vertices*/
-    bitset<1> marked [numVertices];
-    /*stack to implement the dfs*/
+    bitset<1> *marked;
+    marked = new bitset<1> [numVertices];    /*stack to implement the dfs*/
     stack<int> auxStack;
     /*int to put on the stack and keep track of the vertices*/
     int auxVertice;
@@ -309,7 +312,6 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
     /*others*/
     int index;
 
-
     /*Marking all vertices as not found
      *setting level and father to -1 (nonexistent);
      */
@@ -320,7 +322,6 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
       father_level [index][0] = -1;
       father_level [index][1] = -1;
     }
-
     memset(marked, 0, numVertices);
     /*setting root and level of the starting point*/
     father_level [initialVertice-1][0] = 0;
@@ -396,19 +397,18 @@ void Grafos::DFS (int initialVertice, int search)
 {
     int** father_level = new int* [numVertices];
     ofstream file;
-
+    string fileoutput = "./paisInDFS" + to_string(initialVertice) + filename;
     DFSGenerica(initialVertice, father_level);
-
+    cout << "saiu" << endl;
     if (search)
     {
-      string fileoutput = "./paisInDFS102030" + filename;
       file.open(fileoutput);
       file << "filename: " << filename << endl;
       file << "initialVertice: " << initialVertice << endl;
       file << "vertice\t father\t" << endl;
-      file << "10\t" << father_level[10][2] << "\t" << endl;
-      file << "20\t" << father_level[20][2] << "\t" << endl;
-      file << "30\t" << father_level[30][2] << "\t" << endl;
+      file << "10\t" << father_level[10-1][0] << "\t" << endl;
+      file << "20\t" << father_level[20-1][0] << "\t" << endl;
+      file << "30\t" << father_level[30-1][0] << "\t" << endl;
       file.close();
     }
 
@@ -424,7 +424,7 @@ void Grafos::GetDiameter(){
 
     int maxDiameter = 0;
     int diameter;
-    
+
     for(int i = 0; i < numVertices; i++)
     {
     int** bfsInfo = new int* [numVertices];
@@ -549,6 +549,7 @@ void Grafos::createGrafo()
    Vertice *auxVertice = new Vertice(type, numVertices);
    for (int i = 0; i < numVertices; ++i)
        grafo.push_back(*auxVertice);
+    cout << "grafos: " << numVertices << endl;
 }
 
 /* Coloca os dados no grafo */
@@ -571,6 +572,7 @@ void Grafos::Populate()
     file >> numVertices;
 
     createGrafo();
+    cout << "grafos2: " << numVertices << endl;
 
 
     /*Reading the edges. format: "Vertice1 Vertice2"*/
