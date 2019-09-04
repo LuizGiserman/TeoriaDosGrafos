@@ -259,7 +259,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
             }
         }
     }/*end while*/
-    delete matrixVertices;
+    
  }
 
  void Grafos::BFS(int initialVertice, int search)
@@ -283,7 +283,9 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
       file.close();
     }
 
-    delete [] bfsInfo;
+    for(int i = 0; i < numVertices; ++i)
+        delete[] bfsInfo[i];
+    delete[] bfsInfo;
  }
 
 
@@ -387,6 +389,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
     }/*end while*/
 
+
   }
 
 void Grafos::DFS (int initialVertice)
@@ -395,7 +398,9 @@ void Grafos::DFS (int initialVertice)
 
     DFSGenerica(initialVertice, father_level);
 
-    delete [] father_level;
+    for(int i = 0; i < numVertices; ++i)
+        delete[] father_level[i];
+    delete[] father_level;
 }
 
 void Grafos::GetDiameter(){
@@ -405,13 +410,18 @@ void Grafos::GetDiameter(){
 
     int maxDiameter = 0;
     int diameter;
-    int** bfsInfo = new int* [numVertices];
+    
     for(int i = 0; i < numVertices; i++)
     {
+    int** bfsInfo = new int* [numVertices];
         diameter = 0;
         BFSGenerica(i + 1, bfsInfo, NULL, 0, 0, &diameter, NULL, NULL);
         if( diameter > maxDiameter)
             maxDiameter = diameter;
+
+    for(int i = 0; i < numVertices; ++i)
+        delete[] bfsInfo[i];
+    delete[] bfsInfo;
 
     }
         file.open(fileoutput);
@@ -419,7 +429,6 @@ void Grafos::GetDiameter(){
         file << "The diameter of the Graph is " << maxDiameter << endl;
         file.close();
 
-    delete [] bfsInfo;
 }
 
 
