@@ -211,10 +211,6 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
                     // Define Vertice as father
                     bfsInfo[it - 1][2] = auxVertice;
                     auxQueue.push(it);
-                    if (it == 3)
-                    {
-                      cout << "Oi" << endl;
-                    }
                     if(diameter != NULL)
                     {
                         if(*diameter < bfsInfo[it -1][1])
@@ -451,7 +447,7 @@ void Grafos::ConnectedComponents(int search){
 
     ofstream file;
     string fileoutput = "./CCin" + filename;
-
+    int count = 0;
     int auxVertice;
     int** bfsInfo = new int* [numVertices];
 
@@ -495,6 +491,7 @@ void Grafos::ConnectedComponents(int search){
         );
         listComponents.push_back(*auxComponent);
         delete auxComponent;
+        count++;
     }
 
     // Sorting List using Lambda Function as comparator
@@ -504,16 +501,19 @@ void Grafos::ConnectedComponents(int search){
     {
       file.open(fileoutput);
       file << "filename : " << filename << endl;
-      for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
-      {
-        file << "Size: "<< itComponents->size << endl;
-        for(itVertices = itComponents->listComp.begin(); itVertices != itComponents->listComp.end(); ++itVertices)
-        {
-          file << *itVertices << "->";
-        }
-        file << endl;
-        file << endl;
-      }
+      file << "size: " << count << endl;
+      file << "maiorTam: "<< *(listComponents.begin()).size << endl;
+      file << "menorTam: "<< *(listComponents.rbegin()).size << endl; 
+      // for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
+      // {
+      //   file << "Size: "<< itComponents->size << endl;
+      //   for(itVertices = itComponents->listComp.begin(); itVertices != itComponents->listComp.end(); ++itVertices)
+      //   {
+      //     file << *itVertices << "->";
+      //   }
+      //   file << endl;
+      //   file << endl;
+      // }
       file.close();
     }
 
