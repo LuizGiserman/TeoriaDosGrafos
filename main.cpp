@@ -107,11 +107,11 @@ int main(){
      // file << "1000DFS: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << endl;
      // GetFathers(grafo_dbpl,1);
      // GetFathers(grafo_dbpl,0);
-
-     grafo_dbpl.Distance(10, 20, 1);
-     grafo_dbpl.Distance(10, 30, 1);
-     grafo_dbpl.Distance(20, 30, 1);
-     // grafo_dbpl.ConnectedComponents(1);
+     //
+     // grafo_dbpl.Distance(10, 20, 1);
+     // grafo_dbpl.Distance(10, 30, 1);
+     // grafo_dbpl.Distance(20, 30, 1);
+     grafo_dbpl.ConnectedComponents(1);
      // grafo_dbpl.GetDiameter();
      file.close();
 

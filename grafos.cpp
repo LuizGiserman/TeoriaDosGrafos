@@ -33,27 +33,14 @@ Vertice::~Vertice()
   delete [] adjRow;
 }
 
-void Vertice::setVertice(int numVertice){
+void Vertice::setVertice(int numVertice)
+{
 
   if ( type == 0)
     adjList.push_back(numVertice);
   else if (type == 1)
     adjRow[numVertice - 1 ].set();
 
-}
-
-
-vector<int> Vertice::getVerticeList(){
-    vector<int> listVertices;
-    unsigned i;
-
-    if ( type == 0)
-      listVertices = adjList;
-    else if (type == 1)
-      for (i = 0; i < adjRow->size(); i++)
-          if(adjRow[i] == 1)
-              listVertices.push_back(i + 1);
-    return listVertices;
 }
 
 /*corrigir. N precisa de ponteiro. como ja sabemos o tamanho
@@ -74,7 +61,7 @@ bitset<1>* Vertice::getVerticeMatrix()
     return adjVertices;
 }
 
-bool Vertice::hasEdge(int numberVertice){
+bool Vertice::HasEdge(int numberVertice){
   vector<int>::iterator it;
     if ( type == 0)
     {
@@ -98,7 +85,8 @@ Components::Components(){
     size = 0;
 };
 
-void Components::InsertVertice(int Vertice){
+void Components::InsertVertice(int Vertice)
+{
     listComp.push_back(Vertice);
     size++;
 }
@@ -152,15 +140,7 @@ void Grafos::Print(){
 /***/
  };
 
-
-int Grafos::numAdjacencyVertices(int numberVertice){
-    int numAdj = 0;
-    vector<int> verticeList = grafo[numberVertice].getVerticeList();
-    numAdj = verticeList.size();
-    return numAdj;
-};
-
-void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxComponent, int BFStype /*=0*/, int StopVertice/*=0*/, int *diameter /*=0*/,std::list<int>::iterator *arrayPointer/* = {}*/, list<int> *listVerticesforCC/*= {0}*/)
+void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxComponent, int BFStype /*=0*/, int stopVertice/*=0*/, int *diameter /*=0*/,std::list<int>::iterator *arrayPointer/* = {}*/, list<int> *listVerticesforCC/*= {0}*/)
  {
      bitset<1> *matrixVertices;
      vector<int> listVertices;
@@ -168,7 +148,8 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
      queue<int> auxQueue; // Queue Created
 
      if (diameter != NULL)
-        *diameter = 0;
+       *diameter = 0;
+
 
     for (int i = 0; i < numVertices; ++i)
     {
@@ -239,21 +220,15 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
                         auxQueue.push(i + 1);
 
                         if(diameter != NULL)
-                        {
-                            cout << *diameter << " " << endl;
                             if(*diameter < bfsInfo[i][1])
                                 *diameter = bfsInfo[i][1];
-                            cout << *diameter << " " << endl;
-                        }
                     }
                 }
             }
         }
-        // if(CountDiameter == 1){
-        //     Diameter = bfsInfo[auxVertice-1][1] + 1;
-        // }
+
         if(BFStype == 1){
-            if(auxVertice == StopVertice){
+            if(auxVertice == stopVertice){
                 return;
             }
         }
@@ -394,8 +369,9 @@ void Grafos::DFS (int initialVertice, int search)
     int** father_level = new int* [numVertices];
     ofstream file;
     string fileoutput = "./paisInDFS" + to_string(initialVertice) + filename;
+
     DFSGenerica(initialVertice, father_level);
-    cout << "saiu" << endl;
+
     if (search)
     {
       file.open(fileoutput);
@@ -420,25 +396,27 @@ void Grafos::GetDiameter(){
 
     int maxDiameter = 0;
     int diameter;
+    int** bfsInfo = new int* [numVertices];
 
     for(int i = 0; i < numVertices; i++)
     {
-    int** bfsInfo = new int* [numVertices];
+
         diameter = 0;
         BFSGenerica(i + 1, bfsInfo, NULL, 0, 0, &diameter, NULL, NULL);
         if( diameter > maxDiameter)
             maxDiameter = diameter;
 
-    for(int i = 0; i < numVertices; ++i)
-        delete[] bfsInfo[i];
-    delete[] bfsInfo;
-
+        /*clear bfsInfo from previous iteration*/
+        memset(bfsInfo, 0, sizeof(bfsInfo[0][0]) * numVertices * (READINGS_SPT + 1));
     }
         file.open(fileoutput);
         file << "filename: " << filename << endl;
         file << "The diameter of the Graph is " << maxDiameter << endl;
         file.close();
 
+    for(int i = 0; i < numVertices; ++i)
+        delete[] bfsInfo[i];
+    delete[] bfsInfo;
 }
 
 
@@ -448,23 +426,24 @@ void Grafos::ConnectedComponents(int search){
     ofstream file;
     string fileoutput = "./CCin" + filename;
     int count = 0;
+    int maxSize = 0;
+    int minSize = numVertices;
     int auxVertice;
     int** bfsInfo = new int* [numVertices];
 
     std::list<int> listVerticesforCC;
-    std::list<int>::iterator *arrayPointer; /*holds the pointers to the listVerticesforCC vertices*/
+    std::list<int>::iterator arrayPointer[numVertices]; /*holds the pointers to the listVerticesforCC vertices*/
     std::list<int>::iterator itVertices;
 
     list<Components> listComponents; /*list that holds the vertices of all CCs */
-    std::list<Components>::iterator itComponents;
-    Components *auxComponent; /*Will hold a different CC in each iteration of the loop*/
-
+    Components auxComponent; /*Will hold a different CC in each iteration of the loop*/
+    list<Components>::iterator itComponents;
     // listVerticesforCC = new std::list<int> [numVertices];
     /*initially, set all vertices to not found*/
     for(int i = 0; i < numVertices; i++)
         listVerticesforCC.push_back(i + 1);
 
-    arrayPointer = new std::list<int>::iterator [numVertices];
+    // arrayPointer = new std::list<int>::iterator [numVertices];
     /*make every iterator point to its respective vertice*/
     for (itVertices = listVerticesforCC.begin(); itVertices != listVerticesforCC.end(); ++itVertices)
         arrayPointer[*itVertices - 1] = itVertices;
@@ -475,22 +454,25 @@ void Grafos::ConnectedComponents(int search){
     {
         auxVertice = listVerticesforCC.front();
 
-        auxComponent = new Components();
-        auxComponent->size = 0;
-
+        auxComponent.size = 0;
+        auxComponent.listComp.clear();
         /*find the CC*/
         BFSGenerica(
             auxVertice,
             bfsInfo,
-            auxComponent,
+            &auxComponent,
 /*BFSTyoe*/     3,  // 0 -> Normal BFS, 1 -> Stop when discover vertice, 2 -> Diameter, 3 -> Connected Components
 /*Stopvertice*/ 0,
 /*Diameter */   NULL,
             arrayPointer,
             &listVerticesforCC
         );
-        listComponents.push_back(*auxComponent);
-        delete auxComponent;
+
+        if (auxComponent.size > maxSize)
+          maxSize = auxComponent.size;
+        if (auxComponent.size < minSize)
+          minSize = auxComponent.size;
+        listComponents.push_back(auxComponent);
         count++;
     }
 
@@ -502,18 +484,18 @@ void Grafos::ConnectedComponents(int search){
       file.open(fileoutput);
       file << "filename : " << filename << endl;
       file << "size: " << count << endl;
-      file << "maiorTam: "<< *(listComponents.begin()).size << endl;
-      file << "menorTam: "<< *(listComponents.rbegin()).size << endl; 
-      // for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
-      // {
-      //   file << "Size: "<< itComponents->size << endl;
-      //   for(itVertices = itComponents->listComp.begin(); itVertices != itComponents->listComp.end(); ++itVertices)
-      //   {
-      //     file << *itVertices << "->";
-      //   }
-      //   file << endl;
-      //   file << endl;
-      // }
+      file << "maiorTam: "<< maxSize << endl;
+      file << "menorTam: "<< minSize << endl;
+      for (itComponents = listComponents.begin(); itComponents != listComponents.end(); ++itComponents)
+      {
+        file << "Size: "<< itComponents->size << endl;
+        for(itVertices = itComponents->listComp.begin(); itVertices != itComponents->listComp.end(); ++itVertices)
+        {
+          file << *itVertices << "->";
+        }
+        file << endl;
+        file << endl;
+      }
       file.close();
     }
 
@@ -532,7 +514,6 @@ void Grafos::Distance(int firstVertice, int secondVertice, int search)
      file.open(fileoutput);
      file << "fileName: " << filename;
      file << "BFS from " << firstVertice << " to " << secondVertice << endl;
-     file << endl;
      file << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
      file << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
      file.close();
@@ -544,12 +525,11 @@ void Grafos::Distance(int firstVertice, int secondVertice, int search)
 
 
 
-void Grafos::createGrafo()
+void Grafos::CreateGrafo()
 {
    Vertice *auxVertice = new Vertice(type, numVertices);
    for (int i = 0; i < numVertices; ++i)
        grafo.push_back(*auxVertice);
-    cout << "grafos: " << numVertices << endl;
 }
 
 /* Coloca os dados no grafo */
@@ -571,9 +551,7 @@ void Grafos::Populate()
     /*Getting the first line, which contains the info for the number of vertices*/
     file >> numVertices;
 
-    createGrafo();
-    cout << "grafos2: " << numVertices << endl;
-
+    CreateGrafo();
 
     /*Reading the edges. format: "Vertice1 Vertice2"*/
     while (file >> auxVertice1 >> auxVertice2)
@@ -604,7 +582,7 @@ void Grafos::Populate()
      for(int i = 0; i < numVertices; ++i)
        {
          cout << i + 1 << "  ";
-         auxList = grafo[i].getVerticeList();
+         auxList = grafo[i].adjList;
          for(vector<int>::iterator i = auxList.begin(); i != auxList.end(); ++i )
              cout << *i << " ";
          cout << endl;
@@ -619,7 +597,7 @@ void Grafos::GetInformation() {
     int actualVertice = 0;
     for(int i = actualVertice; i < numVertices; ++i )
     {
-        degree = numAdjacencyVertices(i);
+        degree = grafo[i].size;
         totalDegrees += degree;
         degrees.push_back(degree);
     }
