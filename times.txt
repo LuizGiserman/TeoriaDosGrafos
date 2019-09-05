@@ -1,2 +1,0 @@
-FileName: dblp.txt
-Resident set size: 141472

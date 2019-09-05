@@ -1,4 +1,0 @@
-fileName: dblp.txtBFS from 20 to 30
-
-Distance:  7
-Father in Generator Tree:  367956
