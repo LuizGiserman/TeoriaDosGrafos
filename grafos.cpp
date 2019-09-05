@@ -43,9 +43,6 @@ void Vertice::setVertice(int numVertice)
 
 }
 
-/*corrigir. N precisa de ponteiro. como ja sabemos o tamanho
- * da pra botar bitset<1> RowVertices [size] direto.
- */
 bitset<1>* Vertice::getVerticeMatrix()
 {
     bitset<1>* adjVertices;
