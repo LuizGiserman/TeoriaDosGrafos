@@ -93,9 +93,9 @@ int main(){
     // grafo_as_graph.GetDiameter();
 
 
-     Grafos grafo_dbpl = Grafos("grafoteste2.txt", 1);
+     Grafos grafo_dbpl = Grafos("grafoteste2.txt", 0);
      file << "FileName: " << grafo_dbpl.filename << endl;
-     process_mem_usage(vm, rss);
+     // process_mem_usage(vm, rss);
      // file << "Resident set size: " << rss << endl;
      // start = std::chrono::steady_clock::now();
      // ThousandsBDFS(grafo_dbpl, 0);

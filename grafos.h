@@ -28,8 +28,9 @@ using namespace std;
 class Edge
 {
     public:
+    Edge(int connectedVertice, int weight);
     int connectedVertice;
-    float weight;
+    float weight = 1;
 };
 
 class Vertice
@@ -38,14 +39,16 @@ public:
 
     int type;
     int size;
-    vector <int> adjList; /*type = 0*/
-    vector <Edge> adjListWeight;
-    vector < bitset<1> > adjRow; /*type = 1*/
-    vector <int> adjRowWeight
     bool hasWeight;
 
+    vector <int> adjList; /*type = 0*/
+    vector <Edge> adjListWeight;
+
+    vector < bitset<1> > adjRow; /*type = 1*/
+    vector <int> adjRowWeight;
+
     Vertice(int type, int size, bool hasWeight);
-    void setVertice(int Vertice);
+    void setVertice(int Vertice, int auxWeight = 0);
     bool HasEdge(int numVertice);
 };
 

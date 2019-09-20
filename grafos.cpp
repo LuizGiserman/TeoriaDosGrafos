@@ -18,23 +18,58 @@
 
 using namespace std;
 
+Edge::Edge(int connectedVertice, int weight)
+{
+    this->weight = weight;
+    this->connectedVertice = connectedVertice;
+}
 
-Vertice::Vertice(int type, int size){
+Vertice::Vertice(int type, int size, bool hasWeight)
+{
 
   this->type = type;
   this->size = size;
 
+  /*allocating memory beforehand*/
   if (type == 1)
-      adjRow.resize(size);
+    switch(hasWeight)
+    {
+        case false:
+            adjRow.resize(size);
+            break;
+        case true:
+            adjRowWeight.resize(size);
+            break;
+    }
+
 }
 
-void Vertice::setVertice(int numVertice)
+void Vertice::setVertice(int numVertice, int weight)
 {
 
-  if ( type == 0)
-    adjList.push_back(numVertice);
-  else if (type == 1)
-    adjRow[numVertice - 1 ].set();
+    // if weight = 0
+    if (hasWeight)
+        switch (type)
+        {
+            case 0: /*list*/
+                adjListWeight.push_back(Edge(numVertice, weight));
+                break;
+            case 1: /*matrix*/
+                adjRowWeight[numVertice-1] = weight;
+                break;
+        }
+    else
+        switch (type)
+        {
+            case 0: /*list*/
+                adjList.push_back(numVertice);
+                break;
+
+            case 1: /*matrix*/
+                adjRow[numVertice-1].set();
+                break;
+        }
+
 
 }
 
@@ -508,7 +543,7 @@ void Grafos::CreateGrafo()
     int index;
     grafo.reserve(numVertices);
     for (index = 0; index < numVertices; index++)
-        grafo.push_back (Vertice(type, numVertices));
+        grafo.push_back (Vertice(type, numVertices, hasWeight));
 }
 
 /* Coloca os dados no grafo */
@@ -516,6 +551,7 @@ void Grafos::Populate()
 {
     int auxVertice1;
     int auxVertice2;
+    int auxWeight;
     std::ifstream file;
 
     file.open(filename);
@@ -530,30 +566,43 @@ void Grafos::Populate()
     /*Getting the first line, which contains the info for the number of vertices*/
     file >> numVertices;
 
-    CreateGrafo();
+    // CreateGrafo();
 
+    /*Read the firs 2 integers. If the next character is '\n', there is no weight. Else, there is.*/
     file >> auxVertice1 >> auxVertice2;
     if (file.peek() == '\n')
         hasWeight = false;
     else
         hasWeight = true;
 
-    grafo[auxVertice1-1].setVertice(auxVertice2);
-    grafo[auxVertice2-1].setVertice(auxVertice1);
-    numEdges ++;
+    /*Creating all of the vertices in the graph*/
+    CreateGrafo();
 
-    cout << "HasWeight = " << hasWeight << endl;
 
-    /*Reading the edges. format: "Vertice1 Vertice2"*/
-    while (file >> auxVertice1 >> auxVertice2)
+    /*Add the edges and weights according to hasWeight*/
+    switch(hasWeight)
     {
+        case true:
+            file >> auxWeight;
+            do
+            {
+                grafo[auxVertice1-1].setVertice(auxVertice2, auxWeight);
+                grafo[auxVertice2-1].setVertice(auxVertice1, auxWeight);
+                numEdges++;
+            }
+            while (file >> auxVertice1 >> auxVertice2 >> auxWeight);
+            break;
 
-        grafo[auxVertice1-1].setVertice(auxVertice2);
-        grafo[auxVertice2-1].setVertice(auxVertice1);
-        numEdges ++;
+        case false:
+            do
+            {
+                grafo[auxVertice1-1].setVertice(auxVertice2);
+                grafo[auxVertice2-1].setVertice(auxVertice1);
+                numEdges++;
+            } while(file >> auxVertice1 >> auxVertice2);
+            break;
+
     }
-    if (numEdges < 2)
-        printf("Deu ruim");
 
     file.close();
 }
@@ -564,7 +613,10 @@ void Grafos::Populate()
      {
          cout << i + 1 << "  ";
          for(int j = 0; j < numVertices; ++j)
-           cout << grafo[i].adjRow[j] << " ";
+            if (hasWeight)
+                cout << grafo[i].adjRowWeight[j] << " ";
+            else
+                cout << grafo[i].adjRow[j] << " ";
 
          cout << endl;
      }
