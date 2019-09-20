@@ -25,12 +25,7 @@ Vertice::Vertice(int type, int size){
   this->size = size;
 
   if (type == 1)
-      this->adjRow = new bitset<1> [size];
-}
-
-Vertice::~Vertice()
-{
-  delete [] adjRow;
+      adjRow.resize(size);
 }
 
 void Vertice::setVertice(int numVertice)
@@ -43,23 +38,9 @@ void Vertice::setVertice(int numVertice)
 
 }
 
-bitset<1>* Vertice::getVerticeMatrix()
-{
-    bitset<1>* adjVertices;
-    std::vector<int>::iterator it;
-    if (type == 0)
-    {
-        adjVertices = new bitset<1>[size];
-        for (it = adjList.begin(); it != adjList.end(); ++it)
-            adjVertices[*it - 1].set();
-    }
-    else if (type == 1 )
-        adjVertices = adjRow;
-    return adjVertices;
-}
-
 bool Vertice::HasEdge(int numberVertice){
   vector<int>::iterator it;
+
     if ( type == 0)
     {
         it = find(adjList.begin(), adjList.end(), numberVertice);
@@ -139,7 +120,7 @@ void Grafos::Print(){
 
 void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxComponent, int BFStype /*=0*/, int stopVertice/*=0*/, int *diameter /*=0*/,std::list<int>::iterator *arrayPointer/* = {}*/, list<int> *listVerticesforCC/*= {0}*/)
  {
-     bitset<1> *matrixVertices;
+     vector < bitset<1> > matrixVertices;
      vector<int> listVertices;
      int auxVertice;
      queue<int> auxQueue; // Queue Created
@@ -275,7 +256,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
 
     /*Type = 1 variables*/
     /*adjRow to get the row of adjacencies*/
-    bitset<1>  *adjRow;
+    vector < bitset<1> > adjRow;
 
     /*others*/
     int index;
@@ -524,9 +505,10 @@ void Grafos::Distance(int firstVertice, int secondVertice, int search)
 
 void Grafos::CreateGrafo()
 {
-   Vertice *auxVertice = new Vertice(type, numVertices);
-   for (int i = 0; i < numVertices; ++i)
-       grafo.push_back(*auxVertice);
+    int index;
+    grafo.reserve(numVertices);
+    for (index = 0; index < numVertices; index++)
+        grafo.push_back (Vertice(type, numVertices));
 }
 
 /* Coloca os dados no grafo */
@@ -550,13 +532,28 @@ void Grafos::Populate()
 
     CreateGrafo();
 
+    file >> auxVertice1 >> auxVertice2;
+    if (file.peek() == '\n')
+        hasWeight = false;
+    else
+        hasWeight = true;
+
+    grafo[auxVertice1-1].setVertice(auxVertice2);
+    grafo[auxVertice2-1].setVertice(auxVertice1);
+    numEdges ++;
+
+    cout << "HasWeight = " << hasWeight << endl;
+
     /*Reading the edges. format: "Vertice1 Vertice2"*/
     while (file >> auxVertice1 >> auxVertice2)
     {
+
         grafo[auxVertice1-1].setVertice(auxVertice2);
         grafo[auxVertice2-1].setVertice(auxVertice1);
         numEdges ++;
     }
+    if (numEdges < 2)
+        printf("Deu ruim");
 
     file.close();
 }
@@ -567,7 +564,7 @@ void Grafos::Populate()
      {
          cout << i + 1 << "  ";
          for(int j = 0; j < numVertices; ++j)
-           cout << grafo[i].getVerticeMatrix()[j] << " ";
+           cout << grafo[i].adjRow[j] << " ";
 
          cout << endl;
      }

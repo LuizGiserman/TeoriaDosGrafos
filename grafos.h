@@ -25,6 +25,12 @@ typedef unsigned char BYTE;
 
 using namespace std;
 
+class Edge
+{
+    public:
+    int connectedVertice;
+    float weight;
+};
 
 class Vertice
 {
@@ -32,14 +38,14 @@ public:
 
     int type;
     int size;
-    vector<int> adjList; /*type = 0*/
-    bitset<1> *adjRow; /*type = 1*/
+    vector <int> adjList; /*type = 0*/
+    vector <Edge> adjListWeight;
+    vector < bitset<1> > adjRow; /*type = 1*/
+    vector <int> adjRowWeight
+    bool hasWeight;
 
-
-    Vertice(int type, int size);
-    ~Vertice();
+    Vertice(int type, int size, bool hasWeight);
     void setVertice(int Vertice);
-    bitset<1>* getVerticeMatrix();
     bool HasEdge(int numVertice);
 };
 
@@ -61,6 +67,7 @@ public:
   Grafos(string fileName, int type);
   ~Grafos();
   vector<Vertice> grafo;
+  bool hasWeight;
   string filename;
   int type;
   int numVertices;

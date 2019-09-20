@@ -93,10 +93,10 @@ int main(){
     // grafo_as_graph.GetDiameter();
 
 
-     Grafos grafo_dbpl = Grafos("dblp.txt",0);
+     Grafos grafo_dbpl = Grafos("grafoteste2.txt", 1);
      file << "FileName: " << grafo_dbpl.filename << endl;
      process_mem_usage(vm, rss);
-     file << "Resident set size: " << rss << endl;
+     // file << "Resident set size: " << rss << endl;
      // start = std::chrono::steady_clock::now();
      // ThousandsBDFS(grafo_dbpl, 0);
      // end = std::chrono::steady_clock::now();
@@ -111,8 +111,9 @@ int main(){
      // grafo_dbpl.Distance(10, 20, 1);
      // grafo_dbpl.Distance(10, 30, 1);
      // grafo_dbpl.Distance(20, 30, 1);
-     grafo_dbpl.ConnectedComponents(1);
+     // grafo_dbpl.ConnectedComponents(1);
      // grafo_dbpl.GetDiameter();
+     grafo_dbpl.Print();
      file.close();
 
 /*
