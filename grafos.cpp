@@ -402,6 +402,25 @@ void Grafos::DFS (int initialVertice, int search)
     delete[] father_level;
 }
 
+void Grafos::Dijkstra (int initialVertice vector< vector <int> > dijkstraInfo)
+{
+    vector< bitset<1> > marked;
+    vector<int> father;
+    vector<int> level;
+
+    priority_queue <int> explorados;
+
+    marked.resize(numVertices, 0);
+    father.resize(numVertices, -1);
+    level.resize(numVertices, -1);
+
+
+
+
+
+}
+
+
 void Grafos::GetDiameter(){
 
     ofstream file;

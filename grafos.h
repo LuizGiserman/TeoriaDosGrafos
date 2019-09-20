@@ -89,6 +89,8 @@ public:
   void GetDiameter();
   void Distance(int firstVertice, int secondVertice, int search); /*dist entre 2 vertices*/
 
+  void Dijkstra (int initialVertice);
+
   /*funções auxiliares*/
   void Print(); /*Imprime a estrutura do grafo, independente de qual for*/
   void PrintInformation(); /*Imprime informações sobre o grafo*/
