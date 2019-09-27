@@ -17,12 +17,15 @@
 #include <fstream>
 #include <cstring>
 #include <stack>
+#include <utility>
 
 #define READINGS_SPT          2
 #define ERROR_READING_FILE    1
 
-typedef unsigned char BYTE;
+#define INFINITE              std::numeric_limits<int>::max()
 
+typedef unsigned char BYTE;
+typedef std::pair< int, int> dist_vertice;
 using namespace std;
 
 class Edge

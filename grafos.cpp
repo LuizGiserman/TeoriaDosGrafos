@@ -29,6 +29,7 @@ Vertice::Vertice(int type, int size, bool hasWeight)
 
   this->type = type;
   this->size = size;
+  this->hasWeight = hasWeight;
 
   /*allocating memory beforehand*/
   if (type == 1)
@@ -402,21 +403,45 @@ void Grafos::DFS (int initialVertice, int search)
     delete[] father_level;
 }
 
-void Grafos::Dijkstra (int initialVertice vector< vector <int> > dijkstraInfo)
+void Grafos::Dijkstra (int initialVertice)
 {
-    vector< bitset<1> > marked;
+    // vector< bitset<1> > marked;
     vector<int> father;
     vector<int> level;
 
-    priority_queue <int> explorados;
-
-    marked.resize(numVertices, 0);
+    // marked.resize(numVertices, 0);
     father.resize(numVertices, -1);
     level.resize(numVertices, -1);
 
+    int verticeID;
+    vector<int> distance (numVertices, INFINITE);
+    priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
+
+    vector<Edge>::iterator it;
+
+    distance[initialVertice - 1] = 0;
+    distanceHeap.push(make_pair(0, initialVertice - 1));
+
+    while(!distanceHeap.empty())
+    {
+      /*since I am adding the initialVertice - 1 to the heap, I don't need to subtract 1 here*/
+      verticeID = distanceHeap.top().second; /*vertice ID = u*/
+      distanceHeap.pop();
 
 
-
+      for (auto const &v: grafo[verticeID].adjListWeight)
+      {
+        // cout << "u = " << verticeID << " v = " << v.connectedVertice -1 << endl;
+        /*Se dist[v] > dist[u] + w((u,v)) então*/
+        if (distance[v.connectedVertice - 1] > distance[verticeID] + v.weight)
+        {
+          distance[v.connectedVertice - 1]  = distance[verticeID] + v.weight;
+          distanceHeap.push(make_pair(distance[v.connectedVertice - 1], v.connectedVertice -1));
+          father[v.connectedVertice -1] = verticeID + 1;
+          cout << "Pai de " << v.connectedVertice << " = " << father[v.connectedVertice - 1] << endl;
+        }
+      }
+    }
 
 }
 
@@ -597,7 +622,6 @@ void Grafos::Populate()
     /*Creating all of the vertices in the graph*/
     CreateGrafo();
 
-
     /*Add the edges and weights according to hasWeight*/
     switch(hasWeight)
     {
@@ -622,7 +646,6 @@ void Grafos::Populate()
             break;
 
     }
-
     file.close();
 }
 
