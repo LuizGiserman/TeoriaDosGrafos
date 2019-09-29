@@ -651,10 +651,11 @@ void Grafos::Populate()
 
  void Grafos::PrintMatrix()
  {
-     for(int i = 0; i < numVertices; ++i)
+     int i, j;
+     for(i = 0; i < numVertices; i++)
      {
          cout << i + 1 << "  ";
-         for(int j = 0; j < numVertices; ++j)
+         for(j = 0; j < numVertices; j++)
             if (hasWeight)
                 cout << grafo[i].adjRowWeight[j] << " ";
             else
@@ -666,15 +667,29 @@ void Grafos::Populate()
 
   void Grafos::PrintList()
   {
-    vector<int> auxList;
-     for(int i = 0; i < numVertices; ++i)
-       {
-         cout << i + 1 << "  ";
-         auxList = grafo[i].adjList;
-         for(vector<int>::iterator i = auxList.begin(); i != auxList.end(); ++i )
-             cout << *i << " ";
+      unsigned index;
+      if (hasWeight)
+        cout << "Vertice\t(adjacent, weight)" << endl;
+      else
+        cout << "Vertice\tadjacent" << endl;
+
+      for (index = 0; index < (unsigned) numVertices; index++)
+      {
+         cout << index + 1 << "\t";
+         if (hasWeight)
+         {
+             for (auto const &aux : grafo[index].adjListWeight)
+                cout << "(" << aux.connectedVertice << "," << aux.weight << ") ";
+         }
+         else
+         {
+            for (auto const & aux : grafo[index].adjList)
+                cout << aux << " ";
+         }
          cout << endl;
-     }
+      }
+
+
  }
 
 
