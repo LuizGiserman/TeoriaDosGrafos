@@ -112,6 +112,7 @@ public:
 
   float Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice);
 
+  void Prim ();
   void PrintAllPaths (int initialVertice);
 
   /*funções auxiliares*/

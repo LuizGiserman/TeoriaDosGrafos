@@ -500,6 +500,48 @@ float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float>
 
 }
 
+void Grafos::Prim()
+{
+    vector <float> cost (numVertices, INFINITY);
+
+    priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
+    int verticeID;
+
+    distanceHeap.push(make_pair(0, 0));
+    cost [0] = 0;
+    unsigned totalCost = 0;
+
+    while (!distanceHeap.empty())
+    {
+        verticeID = distanceHeap.top().second;
+        distanceHeap.pop();
+
+        /*para cada vizinho v de u faça*/
+        for (auto const &v: grafo[verticeID].adjListWeight)
+        {
+            /*Se custo[v] > w((u,v)) então*/
+            if (cost[v.connectedVertice - 1] > v.weight)
+            {
+                cost[v.connectedVertice - 1] = v.weight;
+                cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
+                distanceHeap.push(make_pair(cost[v.connectedVertice - 1], v.connectedVertice - 1));
+            }
+        }
+
+    }
+
+    for (auto const &v: cost)
+    {
+        cout << "v: " << v << endl;
+        if (v != INFINITY)
+            totalCost += v;
+    }
+
+    cout << "Total Cost MST: " << totalCost << endl;
+
+
+
+}
 
 void Grafos::GetDiameter(){
 
@@ -620,7 +662,7 @@ void Grafos::Distance(int firstVertice, int secondVertice)
     vector <int> father;
     int aux;
 
-    if(hasWeight &&allPos)
+    if(hasWeight && allPos)
     {
         distance = Dijkstra (firstVertice, secondVertice, father);
         cout << "Dijkstra from " << firstVertice << " to " << secondVertice << endl;
@@ -641,6 +683,7 @@ void Grafos::Distance(int firstVertice, int secondVertice)
         cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
         cout << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
         cout << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
+
     }
 
    // string fileoutput = "./distancein" + filename + "from" + to_string(firstVertice) + "to" + to_string(secondVertice) + ".txt";
@@ -666,23 +709,46 @@ void Grafos::Distance(int firstVertice, int secondVertice)
 void Grafos::PrintAllPaths (int initialVertice)
 {
     vector <int> father;
-    Dijkstra (initialVertice, father);
     int index, aux;
+    int **bfsInfo = new int* [numVertices];
 
-    for (index = 0; index < numVertices; index++)
+    if (hasWeight)
     {
-        aux = father[index];
-        if (aux != -1)
+        Dijkstra (initialVertice, father);
+        for (index = 0; index < numVertices; index++)
         {
-            cout << "Path " << index + 1 << ":  " << index + 1 << "<-";
-            while (aux != initialVertice)
+            aux = father[index];
+            if (aux != -1)
             {
-                cout << aux << "<-";
-                aux = father[aux-1];
+                cout << "Path " << index + 1 << ":  " << index + 1 << "<-";
+                while (aux != initialVertice)
+                {
+                    cout << aux << "<-";
+                    aux = father[aux-1];
+                }
+                cout << aux << endl;
             }
-            cout << aux << endl;
         }
     }
+    else /*not working*/
+    {
+        BFSGenerica (initialVertice, bfsInfo);
+        for (index = 0; index < numVertices; index++)
+        {
+            aux = bfsInfo[index][2];
+            if (aux != -1)
+            {
+                cout << "Path " << index + 1 << ":  " << index + 1 << "<-";
+                while (aux != initialVertice)
+                {
+                    cout << aux << "<-";
+                    aux = bfsInfo[aux-1][2];
+                }
+                cout << aux << endl;
+            }
+        }
+    }
+
 
 }
 
