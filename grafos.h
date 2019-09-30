@@ -19,10 +19,15 @@
 #include <stack>
 #include <utility>
 
-#define READINGS_SPT          2
-#define ERROR_READING_FILE    1
+#define READINGS_SPT            2
+#define ERROR_READING_FILE      1
 
-#define INFINITE              std::numeric_limits<int>::max()
+#define INFINITY                std::numeric_limits<int>::max()
+
+#define LIST_TYPE               0
+#define MATRIX_TYPE             1
+
+
 
 typedef unsigned char BYTE;
 typedef std::pair< int, int> dist_vertice;
@@ -38,21 +43,21 @@ class Edge
 
 class Vertice
 {
-public:
+    public:
 
-    int type;
-    int size;
-    bool hasWeight;
+        int type;
+        int size;
+        bool hasWeight;
 
-    vector <int> adjList; /*type = 0*/
-    vector <Edge> adjListWeight;
+        vector <int> adjList; /*type = 0*/
+        vector <Edge> adjListWeight;
 
-    vector < bitset<1> > adjRow; /*type = 1*/
-    vector <int> adjRowWeight;
+        vector < bitset<1> > adjRow; /*type = 1*/
+        vector <float> adjRowWeight;
 
-    Vertice(int type, int size, bool hasWeight);
-    void setVertice(int Vertice, int auxWeight = 0);
-    bool HasEdge(int numVertice);
+        Vertice(int type, int size, bool hasWeight);
+        void setVertice(int Vertice, float auxWeight = 0);
+        bool HasEdge(int numVertice);
 };
 
 class Components

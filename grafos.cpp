@@ -45,7 +45,7 @@ Vertice::Vertice(int type, int size, bool hasWeight)
 
 }
 
-void Vertice::setVertice(int numVertice, int weight)
+void Vertice::setVertice(int numVertice, float weight)
 {
 
     // if weight = 0
@@ -405,42 +405,57 @@ void Grafos::DFS (int initialVertice, int search)
 
 void Grafos::Dijkstra (int initialVertice)
 {
-    // vector< bitset<1> > marked;
     vector<int> father;
     vector<int> level;
 
-    // marked.resize(numVertices, 0);
+
     father.resize(numVertices, -1);
     level.resize(numVertices, -1);
 
+    /*auxiliar Vertice*/
     int verticeID;
-    vector<int> distance (numVertices, INFINITE);
+
+    /*setting all of the found distances to infinity*/
+    vector<int> distance (numVertices, INFINITY);
+
+    /*min heap to get the min distance in O(1) + O(logn)*/
     priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
 
-    vector<Edge>::iterator it;
+    int index;
 
+    /*setting the initial values*/
     distance[initialVertice - 1] = 0;
     distanceHeap.push(make_pair(0, initialVertice - 1));
 
     while(!distanceHeap.empty())
     {
-      /*since I am adding the initialVertice - 1 to the heap, I don't need to subtract 1 here*/
-      verticeID = distanceHeap.top().second; /*vertice ID = u*/
-      distanceHeap.pop();
-
-
-      for (auto const &v: grafo[verticeID].adjListWeight)
-      {
-        // cout << "u = " << verticeID << " v = " << v.connectedVertice -1 << endl;
-        /*Se dist[v] > dist[u] + w((u,v)) então*/
-        if (distance[v.connectedVertice - 1] > distance[verticeID] + v.weight)
+    /*since I am adding the initialVertice - 1 to the heap, I don't need to subtract 1 here*/
+        verticeID = distanceHeap.top().second; /*vertice ID = u*/
+        distanceHeap.pop();
+        if (type == LIST_TYPE)
         {
-          distance[v.connectedVertice - 1]  = distance[verticeID] + v.weight;
-          distanceHeap.push(make_pair(distance[v.connectedVertice - 1], v.connectedVertice -1));
-          father[v.connectedVertice -1] = verticeID + 1;
-          cout << "Pai de " << v.connectedVertice << " = " << father[v.connectedVertice - 1] << endl;
+            for (auto const &v: grafo[verticeID].adjListWeight)
+          /*if dist[v] > dist[u] + w((u,v)) then*/
+                if (distance[v.connectedVertice - 1] > distance[verticeID] + v.weight)
+                {
+                  distance[v.connectedVertice - 1]  = distance[verticeID] + v.weight;
+                  distanceHeap.push(make_pair(distance[v.connectedVertice - 1], v.connectedVertice -1));
+                  father[v.connectedVertice -1] = verticeID + 1;
+                  cout << "Pai de " << v.connectedVertice << " = " << father[v.connectedVertice - 1] << endl;
+                }
         }
-      }
+        else if(type == MATRIX_TYPE)
+        {
+            for (index = 0; index < numVertices; index++)
+                if (grafo[verticeID].adjRowWeight[index] != 0)
+                    if(distance[index] > distance[verticeID] + grafo[verticeID].adjRowWeight[index])
+                    {
+                      distance[index] = distance[verticeID] + grafo[verticeID].adjRowWeight[index];
+                      distanceHeap.push(make_pair(distance[index], index));
+                      father[index] = verticeID + 1;
+                      cout << "Pai de " <<  index + 1 << " = " << father[index] << endl;
+                    }
+        }
     }
 
 }
@@ -595,7 +610,7 @@ void Grafos::Populate()
 {
     int auxVertice1;
     int auxVertice2;
-    int auxWeight;
+    float auxWeight;
     std::ifstream file;
 
     file.open(filename);
@@ -652,9 +667,13 @@ void Grafos::Populate()
  void Grafos::PrintMatrix()
  {
      int i, j;
+     cout << "x   ";
+     for (i =0; i < numVertices; i++)
+        cout << i + 1 << " ";
+     cout << endl << endl;
      for(i = 0; i < numVertices; i++)
      {
-         cout << i + 1 << "  ";
+         cout << i + 1 << "   ";
          for(j = 0; j < numVertices; j++)
             if (hasWeight)
                 cout << grafo[i].adjRowWeight[j] << " ";
