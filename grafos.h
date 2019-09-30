@@ -107,7 +107,12 @@ public:
   /*Overload for simple (prints fathers, doesnt returnt it) Dijkstra*/
   void Dijkstra (int initialVertice);
 
+  /*Overload: return fathers*/
+  void Dijkstra (int initialVertice, vector <int> &father);
+
   float Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice);
+
+  void PrintAllPaths (int initialVertice);
 
   /*funções auxiliares*/
   void Print(); /*Imprime a estrutura do grafo, independente de qual for*/

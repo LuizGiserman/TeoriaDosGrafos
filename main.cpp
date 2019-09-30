@@ -115,7 +115,8 @@ int main(){
      // grafo_dbpl.GetDiameter();
      grafo_dbpl.Print();
      grafo_dbpl.Dijkstra(1);
-     grafo_dbpl.Distance(1, 8);
+     // grafo_dbpl.Distance(1, 8);
+     grafo_dbpl.PrintAllPaths(1);
      file.close();
 
 /*

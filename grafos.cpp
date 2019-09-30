@@ -428,6 +428,15 @@ void Grafos::Dijkstra (int initialVertice)
     /*Print fathers*/
 }
 
+/*Overload: return fathers*/
+void Grafos::Dijkstra (int initialVertice, vector <int> &father)
+{
+    int secondVertice = 0;
+    vector <float> distance;
+    Dijkstra (initialVertice, father, distance, secondVertice);
+}
+
+
 /*Actual Dijkstra*/
 float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice)
 {
@@ -653,6 +662,29 @@ void Grafos::Distance(int firstVertice, int secondVertice)
 
 }
 
+
+void Grafos::PrintAllPaths (int initialVertice)
+{
+    vector <int> father;
+    Dijkstra (initialVertice, father);
+    int index, aux;
+
+    for (index = 0; index < numVertices; index++)
+    {
+        aux = father[index];
+        if (aux != -1)
+        {
+            cout << "Path " << index + 1 << ":  " << index + 1 << "<-";
+            while (aux != initialVertice)
+            {
+                cout << aux << "<-";
+                aux = father[aux-1];
+            }
+            cout << aux << endl;
+        }
+    }
+
+}
 
 
 void Grafos::CreateGrafo()
