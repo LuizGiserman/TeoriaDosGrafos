@@ -403,7 +403,7 @@ void Grafos::DFS (int initialVertice, int search)
     delete[] father_level;
 }
 
-void Grafos::Dijkstra (int initialVertice)
+float Grafos::Dijkstra (int initialVertice, int secondVertice)
 {
     vector<int> father;
     vector<int> level;
@@ -416,7 +416,7 @@ void Grafos::Dijkstra (int initialVertice)
     int verticeID;
 
     /*setting all of the found distances to infinity*/
-    vector<int> distance (numVertices, INFINITY);
+    vector<float> distance (numVertices, INFINITY);
 
     /*min heap to get the min distance in O(1) + O(logn)*/
     priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
@@ -432,6 +432,11 @@ void Grafos::Dijkstra (int initialVertice)
     /*since I am adding the initialVertice - 1 to the heap, I don't need to subtract 1 here*/
         verticeID = distanceHeap.top().second; /*vertice ID = u*/
         distanceHeap.pop();
+
+        /*Searching for distance between 2 specific vertices*/
+        if (secondVertice != 0 && verticeID == secondVertice - 1)
+            return distance[secondVertice - 1];
+
         if (type == LIST_TYPE)
         {
             for (auto const &v: grafo[verticeID].adjListWeight)
@@ -574,24 +579,41 @@ void Grafos::ConnectedComponents(int search){
     delete [] bfsInfo;
  }
 
-void Grafos::Distance(int firstVertice, int secondVertice, int search)
+void Grafos::Distance(int firstVertice, int secondVertice)
 {
-   string fileoutput = "./distancein" + filename + "from" + to_string(firstVertice) + "to" + to_string(secondVertice) + ".txt";
-   int** bfsInfo = new int* [numVertices];
-   ofstream file;
-   BFSGenerica(firstVertice, bfsInfo, NULL , 1, secondVertice, NULL, NULL, NULL);
+    float distance;
 
-   if(search)
-   {
-     file.open(fileoutput);
-     file << "fileName: " << filename;
-     file << "BFS from " << firstVertice << " to " << secondVertice << endl;
-     file << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
-     file << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
-     file.close();
-   }
+    if(hasWeight)
+    {
+        distance = Dijkstra (firstVertice, secondVertice);
+        cout << "Dijkstra from " << firstVertice << " to " << secondVertice << endl;
+        cout << "Distance: " << distance << endl;
+    }
+    else
+    {
+        int** bfsInfo = new int* [numVertices];
+        BFSGenerica(firstVertice, bfsInfo, NULL , 1, secondVertice, NULL, NULL, NULL);
+        cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
+        cout << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
+        cout << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
+    }
 
-   delete [] bfsInfo;
+   // string fileoutput = "./distancein" + filename + "from" + to_string(firstVertice) + "to" + to_string(secondVertice) + ".txt";
+   // int** bfsInfo = new int* [numVertices];
+   // ofstream file;
+   //
+   //
+   // if(search)
+   // {
+   //   file.open(fileoutput);
+   //   file << "fileName: " << filename;
+   //   file << "BFS from " << firstVertice << " to " << secondVertice << endl;
+   //   file << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
+   //   file << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
+   //   file.close();
+   // }
+   //
+   // delete [] bfsInfo;
 
 }
 

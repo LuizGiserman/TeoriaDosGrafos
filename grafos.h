@@ -95,9 +95,9 @@ public:
   void DFS(int initialVertice, int search);
   void ConnectedComponents(int search);
   void GetDiameter();
-  void Distance(int firstVertice, int secondVertice, int search); /*dist entre 2 vertices*/
+  void Distance(int firstVertice, int secondVertice); /*dist entre 2 vertices*/
 
-  void Dijkstra (int initialVertice);
+  float Dijkstra (int initialVertice, int secondVertice = 0);
 
   /*funções auxiliares*/
   void Print(); /*Imprime a estrutura do grafo, independente de qual for*/

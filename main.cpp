@@ -93,7 +93,7 @@ int main(){
     // grafo_as_graph.GetDiameter();
 
 
-     Grafos grafo_dbpl = Grafos("grafoteste2.txt", MATRIX_TYPE);
+     Grafos grafo_dbpl = Grafos("grafoteste2.txt", LIST_TYPE);
      file << "FileName: " << grafo_dbpl.filename << endl;
      // process_mem_usage(vm, rss);
      // file << "Resident set size: " << rss << endl;
@@ -115,6 +115,7 @@ int main(){
      // grafo_dbpl.GetDiameter();
      grafo_dbpl.Print();
      grafo_dbpl.Dijkstra(1);
+     grafo_dbpl.Distance(1, 8);
      file.close();
 
 /*
