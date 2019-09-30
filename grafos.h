@@ -79,6 +79,7 @@ public:
   ~Grafos();
   vector<Vertice> grafo;
   bool hasWeight;
+  bool allPos = true;
   string filename;
   int type;
   int numVertices;
@@ -97,7 +98,16 @@ public:
   void GetDiameter();
   void Distance(int firstVertice, int secondVertice); /*dist entre 2 vertices*/
 
-  float Dijkstra (int initialVertice, int secondVertice = 0);
+  /*Overload for the Distance between 2 specific vertices function*/
+  float Dijkstra (int initialVertice, int secondVertice, vector <int> &father);
+
+  /*Overload for the regular Dijkstra (getting distances) */
+  void Dijkstra (int initialVertice, vector <float> &distance);
+
+  /*Overload for simple (prints fathers, doesnt returnt it) Dijkstra*/
+  void Dijkstra (int initialVertice);
+
+  float Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice);
 
   /*funções auxiliares*/
   void Print(); /*Imprime a estrutura do grafo, independente de qual for*/

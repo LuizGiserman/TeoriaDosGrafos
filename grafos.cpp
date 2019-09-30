@@ -403,20 +403,42 @@ void Grafos::DFS (int initialVertice, int search)
     delete[] father_level;
 }
 
-float Grafos::Dijkstra (int initialVertice, int secondVertice)
+/*Overload for the Distance between 2 specific vertices function*/
+float Grafos::Dijkstra (int initialVertice, int secondVertice, vector <int> &father)
 {
-    vector<int> father;
-    vector<int> level;
+    vector <float> distance;
+    return Dijkstra(initialVertice, father, distance, secondVertice);
+}
 
+/*Overload for the regular Dijkstra (getting distances) */
+void Grafos::Dijkstra (int initialVertice, vector <float> &distance)
+{
+    int secondVertice = 0;
+    vector <int> father;
+    Dijkstra (initialVertice, father, distance, secondVertice);
+}
+
+/*Overload for simple (prints fathers, doesnt returnt it) Dijkstra*/
+void Grafos::Dijkstra (int initialVertice)
+{
+    int secondVertice = 0;
+    vector <int> father;
+    vector <float> distance;
+    Dijkstra (initialVertice, father, distance, secondVertice);
+    /*Print fathers*/
+}
+
+/*Actual Dijkstra*/
+float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice)
+{
+    vector<int> level;
 
     father.resize(numVertices, -1);
     level.resize(numVertices, -1);
+    distance.resize(numVertices, INFINITY);
 
     /*auxiliar Vertice*/
     int verticeID;
-
-    /*setting all of the found distances to infinity*/
-    vector<float> distance (numVertices, INFINITY);
 
     /*min heap to get the min distance in O(1) + O(logn)*/
     priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
@@ -446,7 +468,7 @@ float Grafos::Dijkstra (int initialVertice, int secondVertice)
                   distance[v.connectedVertice - 1]  = distance[verticeID] + v.weight;
                   distanceHeap.push(make_pair(distance[v.connectedVertice - 1], v.connectedVertice -1));
                   father[v.connectedVertice -1] = verticeID + 1;
-                  cout << "Pai de " << v.connectedVertice << " = " << father[v.connectedVertice - 1] << endl;
+                  // cout << "Pai de " << v.connectedVertice << " = " << father[v.connectedVertice - 1] << endl;
                 }
         }
         else if(type == MATRIX_TYPE)
@@ -458,10 +480,14 @@ float Grafos::Dijkstra (int initialVertice, int secondVertice)
                       distance[index] = distance[verticeID] + grafo[verticeID].adjRowWeight[index];
                       distanceHeap.push(make_pair(distance[index], index));
                       father[index] = verticeID + 1;
-                      cout << "Pai de " <<  index + 1 << " = " << father[index] << endl;
+                      // cout << "Pai de " <<  index + 1 << " = " << father[index] << endl;
                     }
         }
     }
+
+    if (secondVertice != 0)
+        return -1;
+    return 0;
 
 }
 
@@ -582,14 +608,24 @@ void Grafos::ConnectedComponents(int search){
 void Grafos::Distance(int firstVertice, int secondVertice)
 {
     float distance;
+    vector <int> father;
+    int aux;
 
-    if(hasWeight)
+    if(hasWeight &&allPos)
     {
-        distance = Dijkstra (firstVertice, secondVertice);
+        distance = Dijkstra (firstVertice, secondVertice, father);
         cout << "Dijkstra from " << firstVertice << " to " << secondVertice << endl;
         cout << "Distance: " << distance << endl;
+        aux = father[secondVertice - 1];
+        cout << "Path: "<< secondVertice << "<-";
+        while (aux != firstVertice)
+        {
+            cout << aux << "<-";
+            aux = father[aux-1];
+        }
+        cout << aux << endl;
     }
-    else
+    else if(!hasWeight)
     {
         int** bfsInfo = new int* [numVertices];
         BFSGenerica(firstVertice, bfsInfo, NULL , 1, secondVertice, NULL, NULL, NULL);
@@ -666,6 +702,8 @@ void Grafos::Populate()
             file >> auxWeight;
             do
             {
+                if (auxWeight < 0)
+                    allPos = false;
                 grafo[auxVertice1-1].setVertice(auxVertice2, auxWeight);
                 grafo[auxVertice2-1].setVertice(auxVertice1, auxWeight);
                 numEdges++;
