@@ -503,10 +503,9 @@ float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float>
 void Grafos::Prim()
 {
     vector <float> cost (numVertices, INFINITY);
-
     priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
+    vector<bool> marked (numVertices, false);
     int verticeID;
-
     distanceHeap.push(make_pair(0, 0));
     cost [0] = 0;
     unsigned totalCost = 0;
@@ -515,12 +514,12 @@ void Grafos::Prim()
     {
         verticeID = distanceHeap.top().second;
         distanceHeap.pop();
-
+        marked[verticeID] = true;
         /*para cada vizinho v de u faça*/
         for (auto const &v: grafo[verticeID].adjListWeight)
         {
             /*Se custo[v] > w((u,v)) então*/
-            if (cost[v.connectedVertice - 1] > v.weight)
+            if ( (cost[v.connectedVertice - 1] > v.weight) && (marked[v.connectedVertice -1] == false) )
             {
                 cost[v.connectedVertice - 1] = v.weight;
                 cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
