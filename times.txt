@@ -1,1 +1,4 @@
-FileName: primTeste.txt
+FileName: ./grafosTrab2/grafo_3.txt
+Resident set size: 51608
+VM: 62420
+Prim: 472.586 ms

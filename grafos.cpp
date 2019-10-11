@@ -522,7 +522,7 @@ void Grafos::Prim()
             if ( (cost[v.connectedVertice - 1] > v.weight) && (marked[v.connectedVertice -1] == false) )
             {
                 cost[v.connectedVertice - 1] = v.weight;
-                cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
+                // cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
                 distanceHeap.push(make_pair(cost[v.connectedVertice - 1], v.connectedVertice - 1));
             }
         }
@@ -531,7 +531,7 @@ void Grafos::Prim()
 
     for (auto const &v: cost)
     {
-        cout << "v: " << v << endl;
+        // cout << "v: " << v << endl;
         if (v != INFINITY)
             totalCost += v;
     }
