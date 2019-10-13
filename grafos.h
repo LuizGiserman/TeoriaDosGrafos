@@ -110,6 +110,9 @@ public:
   /*Overload: return fathers*/
   void Dijkstra (int initialVertice, vector <int> &father);
 
+    /*Overload: return fathers and distance*/
+  void Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance);
+
   float Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice);
 
   void Prim ();

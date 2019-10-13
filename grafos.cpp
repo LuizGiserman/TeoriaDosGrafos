@@ -436,6 +436,12 @@ void Grafos::Dijkstra (int initialVertice, vector <int> &father)
     Dijkstra (initialVertice, father, distance, secondVertice);
 }
 
+void Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance){
+    
+    int secondVertice = 0;
+    Dijkstra (initialVertice, father, distance, secondVertice );
+};
+
 
 /*Actual Dijkstra*/
 float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice)
