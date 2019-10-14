@@ -508,19 +508,22 @@ float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float>
 
 void Grafos::Prim(){
     vector <float> cost;
+    vector<int> level;
     vector<int> discover;
-    Prim(discover,cost);
+    Prim(discover,cost,level);
 
 }
 
 void Grafos::Prim(vector<int> &discover){
+    vector<int> level;
     vector <float> cost;
-    Prim(discover,cost);
+    Prim(discover,cost,level);
 
 }
 
-void Grafos::Prim(vector<int> &discover, vector<float> &cost)
+void Grafos::Prim(vector<int> &discover, vector<float> &cost,vector<int> &level)
 {   
+    level.resize(numVertices,-1);
     cost.resize(numVertices,INFINITY);
     discover.resize(numVertices, -1);
     priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
@@ -529,6 +532,7 @@ void Grafos::Prim(vector<int> &discover, vector<float> &cost)
     distanceHeap.push(make_pair(0, 0));
     discover[0] = 0;
     cost [0] = 0;
+    level[0] = 0;
     unsigned totalCost = 0;
 
     while (!distanceHeap.empty())
@@ -544,12 +548,15 @@ void Grafos::Prim(vector<int> &discover, vector<float> &cost)
             {
                 cost[v.connectedVertice - 1] = v.weight;
                 discover[v.connectedVertice - 1] = verticeID + 1;
+                level[v.connectedVertice-1] = level[verticeID] + 1;
                 // cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
                 distanceHeap.push(make_pair(cost[v.connectedVertice - 1], v.connectedVertice - 1));
             }
         }
 
     }
+
+    
 
     for (auto const &v: cost)
     {

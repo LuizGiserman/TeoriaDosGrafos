@@ -205,6 +205,7 @@ void RedeColaboradoresPrim(Grafos grafo, string filename){
    size_t position;
    vector<int> discover;
    vector <float> cost;
+   vector<int> level;
    
    while (getline(infile,b))
 {   position = b.find(",");
@@ -217,32 +218,32 @@ void RedeColaboradoresPrim(Grafos grafo, string filename){
 
   string Objetivos [2] = { "Edsger W. Dijkstra", "Daniel R. Figueiredo"};
 
-  grafo.Prim(discover,cost);
+  grafo.Prim(discover,cost,level);
 
-  stack <float> custo;
-  stack <float> indice;
+  stack <int> graus;
+  stack <int> indice;
 
 
-  for(int i=0; i< cost.size(); i++){
-    if(custo.empty()){
-      custo.push(cost[0]);
+  for(int i=0; i< level.size(); i++){
+    if(graus.empty()){
+      graus.push(level[0]);
       indice.push(0);
     }
-    if(cost[i] >= custo.top()){
-      custo.push(cost[i]);
+    if(level[i] >= graus.top()){
+      graus.push(level[i]);
       indice.push(i);
     }
   }
 
 
-  cout << "Os tres mais custosos da MST:" << endl;
-  cout << custo.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
+  cout << "Os tres de maior grau da MST:" << endl;
+  cout << graus.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
   indice.pop();
-  custo.pop();
-  cout << custo.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
+  graus.pop();
+  cout << graus.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
   indice.pop();
-  custo.pop();
-  cout << custo.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
+  graus.pop();
+  cout << graus.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
   cout<< endl<< endl;
 
 
