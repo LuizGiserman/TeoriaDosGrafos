@@ -4,6 +4,7 @@
 #include <sys/timeb.h>
 #include <chrono>
 #include <time.h>
+#include <stack>
 #include <map>
 #include "grafos.h"
 
@@ -91,6 +92,7 @@ void eccentricityTime(Grafos grafo, string filename){
   vector <int> father;
   vector <float> distance;
   ofstream file;
+  int eccentricity;
   file.open(filename, std::ofstream::out | std::ofstream::app);
   file << "FileName: " << grafo.filename << endl;
   file << endl;
@@ -98,6 +100,11 @@ void eccentricityTime(Grafos grafo, string filename){
   for(int i =1; i < 101; i++){
     grafo.Dijkstra(i,father,distance);
   }
+  eccentricity = 0;
+    for(int i = 0; i < distance.size(); i++){
+      if(distance[i] > eccentricity)
+        eccentricity = distance[i];
+    }      
   end = std::chrono::steady_clock::now();
   file << "Tempo para achar 100 Excentricidades: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() /1000.0 << " ms" << endl;
   file.close();
@@ -114,7 +121,8 @@ void PrimTime(){
       cout << graphName << endl;
       Grafos grafo = Grafos(graphName, LIST_TYPE);
       start = std::chrono::steady_clock::now();
-      grafo.Prim();
+      vector<int> distance;
+      grafo.Prim(distance);
       end = std::chrono::steady_clock::now();
       cout << "Prim: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() /1000.0 << " ms" << endl;
     }
@@ -149,17 +157,23 @@ void RedeColaboradores(Grafos grafo, string filename){
     vector <float> distance;
     cout << Vertices[inicial] << endl;
     cout <<VerticesInvertido[Vertices[inicial]] << endl;
+    /*
+    for(int i = 1; i < 5; i++){
+      grafo.Distance(Vertices[inicial],Vertices[Objetivos[i]]);
+    }
+    */
+
     grafo.Dijkstra(Vertices[inicial],father,distance);
     cout << "Terminou" << endl;
     ofstream file;
     file.open(filename, std::ofstream::out | std::ofstream::app);
     file << "FileName: " << grafo.filename << endl;
     file << " Indice Pai Distancia" << endl;
-    file << Objetivos[0] << "  " << VerticesInvertido[father[Vertices[Objetivos[0]]-1]] << "   " << distance[Vertices[Objetivos[0]]-1] <<endl;
-    file << Objetivos[1] << "  " << VerticesInvertido[father[Vertices[Objetivos[1]]-1]] << "   " << distance[Vertices[Objetivos[1]]-1] <<endl;
-    file << Objetivos[2] << "  " << VerticesInvertido[father[Vertices[Objetivos[2]]-1]] << "   " << distance[Vertices[Objetivos[2]]-1] <<endl;
-    file << Objetivos[3] << "  " << VerticesInvertido[father[Vertices[Objetivos[3]]-1]] << "   " << distance[Vertices[Objetivos[3]]-1] <<endl;
-    file << Objetivos[4] << "  " << VerticesInvertido[father[Vertices[Objetivos[4]]-1]] << "   " << distance[Vertices[Objetivos[4]]-1] <<endl;
+    file << Objetivos[0] << "  " << VerticesInvertido[father[positions[0]-1]] << "   " << distance[Vertices[Objetivos[0]]-1] <<endl;
+    file << Objetivos[1] << "  " << VerticesInvertido[father[positions[1]-1]] << "   " << distance[Vertices[Objetivos[1]]-1] <<endl;
+    file << Objetivos[2] << "  " << VerticesInvertido[father[positions[2]-1]] << "   " << distance[Vertices[Objetivos[2]]-1] <<endl;
+    file << Objetivos[3] << "  " << VerticesInvertido[father[positions[3]-1]] << "   " << distance[Vertices[Objetivos[3]]-1] <<endl;
+    file << Objetivos[4] << "  " << VerticesInvertido[father[positions[4]-1]] << "   " << distance[Vertices[Objetivos[4]]-1] <<endl;
     file << endl;
     file << endl;
     cout << father[Vertices[Objetivos[0]]-1];
@@ -169,27 +183,28 @@ void RedeColaboradores(Grafos grafo, string filename){
     for(int i =0; i < 5; i++){
       file << Objetivos[i] << endl;
       file << "[ "<< Objetivos[i] << ",";
-      int pai = father[Vertices[Objetivos[i]] - 1];
+      int pai = father[Vertices[Objetivos[i]]-1];
       while(pai != stop && pai != -1){
         file <<" " << VerticesInvertido[pai] << ",";
-        pai = father[pai - 1];
+        pai = father[pai-1];
       }
       file <<inicial <<" ]"<< endl;
       file << endl;
       
     }
-    file.close();
-  
+    file.close();  
 
 }
 
-void RedeColabodoresPrim(Grafos grafo, string filename){
+void RedeColaboradoresPrim(Grafos grafo, string filename){
   map<string, int> Vertices;
    map<int,string> VerticesInvertido;
    ifstream infile("rede_colaboracao_vertices.txt");
    int a;
    string b;
    size_t position;
+   vector<int> discover;
+   vector <float> cost;
    
    while (getline(infile,b))
 {   position = b.find(",");
@@ -197,18 +212,61 @@ void RedeColabodoresPrim(Grafos grafo, string filename){
     b = b.substr(position + 1,b.length());
     Vertices[b] = a;
     VerticesInvertido[a] = b; 
+    cout << a << endl;
 } 
-  grafo.Prim();
+
+  string Objetivos [2] = { "Edsger W. Dijkstra", "Daniel R. Figueiredo"};
+
+  grafo.Prim(discover,cost);
+
+  stack <float> custo;
+  stack <float> indice;
+
+
+  for(int i=0; i< cost.size(); i++){
+    if(custo.empty()){
+      custo.push(cost[0]);
+      indice.push(0);
+    }
+    if(cost[i] >= custo.top()){
+      custo.push(cost[i]);
+      indice.push(i);
+    }
+  }
+
+
+  cout << "Os tres mais custosos da MST:" << endl;
+  cout << custo.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
+  indice.pop();
+  custo.pop();
+  cout << custo.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
+  indice.pop();
+  custo.pop();
+  cout << custo.top() << "  " << VerticesInvertido[indice.top()+1] << endl;
+  cout<< endl<< endl;
+
+
+  for(int i =0; i < 2; i++){
+    cout << Objetivos[i] << " na MST" << endl;
+    cout << VerticesInvertido[discover[Vertices[Objetivos[1]]-1]+1] << endl;
+    for(int j = 0; j < discover.size(); j++ ){
+      if(discover[j] == Vertices[Objetivos[i]]){
+        cout << VerticesInvertido[j + 1] << endl;
+      }
+    }
+    cout << endl << endl;
+  }
+
+
 }
 
 
 int main()
-{
+{ 
   
   Grafos grafo = Grafos("rede_colaboracao.txt", LIST_TYPE);
-  string filename = "resultado_rede_coleboracao.txt";
-  RedeColaboradores(grafo,filename);
-  RedeColabodoresPrim(grafo,filename);
+  string filename = "resultado_prim_rede_colaboracao.txt";
+  RedeColaboradoresPrim(grafo,filename);
 
     
 }

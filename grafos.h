@@ -36,7 +36,7 @@ using namespace std;
 class Edge
 {
     public:
-    Edge(int connectedVertice, int weight);
+    Edge(int connectedVertice, float weight);
     int connectedVertice;
     float weight = 1;
 };
@@ -115,6 +115,8 @@ public:
 
   float Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice);
 
+  void Prim (vector<int> &discover,vector<float> &cost);
+  void Prim (vector<int> &discover);
   void Prim ();
   void PrintAllPaths (int initialVertice);
 

@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Edge::Edge(int connectedVertice, int weight)
+Edge::Edge(int connectedVertice, float weight)
 {
     this->weight = weight;
     this->connectedVertice = connectedVertice;
@@ -506,13 +506,28 @@ float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float>
 
 }
 
-void Grafos::Prim()
-{
-    vector <float> cost (numVertices, INFINITY);
+void Grafos::Prim(){
+    vector <float> cost;
+    vector<int> discover;
+    Prim(discover,cost);
+
+}
+
+void Grafos::Prim(vector<int> &discover){
+    vector <float> cost;
+    Prim(discover,cost);
+
+}
+
+void Grafos::Prim(vector<int> &discover, vector<float> &cost)
+{   
+    cost.resize(numVertices,INFINITY);
+    discover.resize(numVertices, -1);
     priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
     vector<bool> marked (numVertices, false);
     int verticeID;
     distanceHeap.push(make_pair(0, 0));
+    discover[0] = 0;
     cost [0] = 0;
     unsigned totalCost = 0;
 
@@ -528,6 +543,7 @@ void Grafos::Prim()
             if ( (cost[v.connectedVertice - 1] > v.weight) && (marked[v.connectedVertice -1] == false) )
             {
                 cost[v.connectedVertice - 1] = v.weight;
+                discover[v.connectedVertice - 1] = verticeID + 1;
                 // cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
                 distanceHeap.push(make_pair(cost[v.connectedVertice - 1], v.connectedVertice - 1));
             }
