@@ -66,16 +66,15 @@ void getPath(Grafos grafo, string filename){
 
 void eccentricity(Grafos grafo, string filename) {
   int vertices[5] = {10,20,30,40,50};
-  vector <int> father;
-  vector <float> distance;
   ofstream file;
   file.open(filename, std::ofstream::out | std::ofstream::app);
   file << "FileName: " << grafo.filename << endl;
   file << endl;
   int eccentricity;
   for(int i =0; i < 5; i++){
+    vector <float> distance;
     file << vertices[i] << endl;
-    grafo.Dijkstra(vertices[i],father,distance);
+    grafo.Dijkstra(vertices[i],distance);
     eccentricity = 0;
     for(int i = 0; i < distance.size(); i++){
       if(distance[i] > eccentricity)
@@ -87,10 +86,9 @@ void eccentricity(Grafos grafo, string filename) {
 }
 
 void eccentricityTime(Grafos grafo, string filename){
-  std::chrono::steady_clock::time_point start;
-  std::chrono::steady_clock::time_point end;
+  std::chrono::steady_clock::time_point start, start_small;
+  std::chrono::steady_clock::time_point end, end_small;
   vector <int> father;
-  vector <float> distance;
   ofstream file;
   int eccentricity;
   file.open(filename, std::ofstream::out | std::ofstream::app);
@@ -98,13 +96,18 @@ void eccentricityTime(Grafos grafo, string filename){
   file << endl;
   start = std::chrono::steady_clock::now();
   for(int i =1; i < 101; i++){
-    grafo.Dijkstra(i,father,distance);
-  }
-  eccentricity = 0;
+    vector <float> distance;
+    cout << i << endl;
+    start_small = std::chrono::steady_clock::now();
+    grafo.Dijkstra(i);
+    end_small = std::chrono::steady_clock::now();
+    cout << std::chrono::duration_cast<std::chrono::microseconds>(end_small - start_small).count() /1000.0 << " ms" << endl;
+    eccentricity = 0;
     for(int i = 0; i < distance.size(); i++){
       if(distance[i] > eccentricity)
         eccentricity = distance[i];
-    }      
+    }
+  }
   end = std::chrono::steady_clock::now();
   file << "Tempo para achar 100 Excentricidades: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() /1000.0 << " ms" << endl;
   file.close();
@@ -261,13 +264,40 @@ void RedeColaboradoresPrim(Grafos grafo, string filename){
 
 }
 
+void infoRedeColaboradores(Grafos grafo, string filename){
+  map<string, int> Vertices;
+   map<int,string> VerticesInvertido;
+  std::chrono::steady_clock::time_point start;
+  std::chrono::steady_clock::time_point end;
+   ifstream infile("rede_colaboracao_vertices.txt");
+   int a;
+   string b;
+   size_t position;
+   vector<int> discover;
+   vector <float> cost;
+   vector<int> level;
+   
+   while (getline(infile,b))
+{   position = b.find(",");
+    a = stoi(b.substr(0,position));
+    b = b.substr(position + 1,b.length());
+    Vertices[b] = a;
+    VerticesInvertido[a] = b; 
+    cout << a << endl;
+} 
+      start = std::chrono::steady_clock::now();
+      vector<int> distance;
+      grafo.Prim();
+      end = std::chrono::steady_clock::now();
+      cout << "Prim: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() /1000.0 << " ms" << endl;
+}
+
 
 int main()
 { 
   
-  Grafos grafo = Grafos("rede_colaboracao.txt", LIST_TYPE);
-  string filename = "resultado_prim_rede_colaboracao.txt";
-  RedeColaboradoresPrim(grafo,filename);
-
-    
+  string grafoname = "rede_colaboracao.txt";
+  Grafos grafo = Grafos(grafoname, LIST_TYPE);
+  string filename = "eccentricity_grafo_colaboradores.txt";
+  eccentricity(grafo,filename);
 }

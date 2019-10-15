@@ -547,7 +547,7 @@ void Grafos::Prim(vector<int> &discover, vector<float> &cost,vector<int> &level)
             if ( (cost[v.connectedVertice - 1] > v.weight) && (marked[v.connectedVertice -1] == false) )
             {
                 cost[v.connectedVertice - 1] = v.weight;
-                discover[v.connectedVertice - 1] = verticeID + 1;
+                discover[v.connectedVertice - 1] = verticeID+1;
                 level[v.connectedVertice-1] = level[verticeID] + 1;
                 // cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
                 distanceHeap.push(make_pair(cost[v.connectedVertice - 1], v.connectedVertice - 1));
