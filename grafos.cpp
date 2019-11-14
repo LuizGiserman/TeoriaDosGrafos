@@ -869,7 +869,144 @@ void Grafos::Populate()
 
  }
 
+bool Grafos::isBipartite(int initialVertice, int* color){
 
+    color[initialVertice] = 1; 
+
+    queue <int> q; 
+    q.push(initialVertice); 
+  
+    while (!q.empty()){ 
+        
+        int u = q.front(); 
+        q.pop(); 
+
+        for(auto const &it : grafo[u].adjList) { 
+            if (color[it - 1] == -1) { 
+                color[it - 1] = 1 - color[u]; 
+                q.push(it - 1); 
+            } 
+
+            else if (color[it - 1] == color[u]){
+                return false;
+            } 
+        } 
+    } 
+  
+    return true; 
+}
+
+bool Grafos::isBipartite(){
+
+    int color[numVertices]; 
+    for (int i = 0; i < numVertices; ++i) 
+        color[i] = -1; 
+
+
+    int i;
+    bool result;
+    i = indexNotVisited(color);
+    while(i != numVertices){
+        result = isBipartite(i,color);
+        if(!result)
+            return false;
+       i = indexNotVisited(color); 
+    };
+
+    int numGroup1 = 0;
+    int numGroup2 = 0;
+    vector<int> group1;
+    vector<int> group2;
+
+    for(i = 0; i < numVertices; i++){
+        if(color[i] == 0){
+            numGroup1++;
+            group1.push_back(i);
+        } 
+          else
+        {
+            numGroup2++;
+            group2.push_back(i);
+        }
+        
+    }
+
+    this->numGroup1 = numGroup1;
+    this->numGroup2 = numGroup2;
+    this->group1 = group1;
+    this->group2 = group2;
+
+    return true;
+}
+
+int Grafos::indexNotVisited(int* color){
+    int i;
+
+    for(i = 0; i < numVertices; i++){
+        if (color[i] == -1){
+            return i;
+        };
+    }
+
+    return numVertices;
+
+}
+
+int Grafos::maximumBipartiteMatching(){
+
+    int matched[numVertices];
+
+    bool visited[numVertices];
+
+    int max_matching = 0;
+
+    int i;
+
+    for(i = 0; i < numVertices; i++){
+        matched[i] = -1;
+    }
+
+    for (auto const &v: group1) {
+        if (matched[v] == -1) {
+            for(i = 0; i < numVertices; i++){
+                visited[i] = false;
+            }
+            if (augment_path(v,visited,matched)) {
+                max_matching++;
+            }
+        }
+    }
+
+    return max_matching;
+}
+
+bool Grafos::augment_path(int vertex, bool *visited, int *matched) {
+  
+  visited[vertex] = true;
+
+  for (auto const &v: grafo[vertex].adjList){
+    int neighbour = v - 1;
+    if (visited[neighbour] == true) {
+      continue;
+    }
+
+    if (matched[neighbour] == -1) {
+      matched[vertex] = neighbour;
+      matched[neighbour] = vertex;
+      return true;
+    } else if (matched[neighbour] != vertex) {
+
+      visited[neighbour] = true;
+      if (augment_path(matched[neighbour],visited, matched)) {
+        matched[vertex] = neighbour;
+        matched[neighbour] = vertex;
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
 void Grafos::GetInformation() {
     vector<int> degrees;
     int degree;
@@ -900,3 +1037,59 @@ void Grafos::GetInformation() {
      this->medDegree = totalDegrees/numVertices;
 
 };
+
+void Grafos::BellmanFord(int initialVertice, int* distance){
+
+    int i;
+    for(i = 0; i < numVertices; i++){
+        distance[i] = __INT_MAX__;
+    }
+    
+    distance[initialVertice] = 0;
+
+    int j;
+    int destination;
+    int weight;
+
+    bool tableUpdated;
+
+    for (i = 0; i < numVertices - 1; i++) {
+        tableUpdated = false;
+      for (j = 0; j < numVertices; i++) {
+        for (auto const &v: grafo[j].adjListWeight){
+            destination = v.connectedVertice - 1;
+            weight = v.weight;
+            if (distance[j] != __INT_MAX__ && distance[j] + weight < distance[destination]){
+                distance[destination] = distance[j] + weight;
+                if(!tableUpdated){
+                    tableUpdated = true;
+                }
+            }
+        }
+      }
+      if(!tableUpdated){
+          break;
+      }
+    }
+
+    for (i = 0; i < numVertices; i++) {
+        for (auto const &v: grafo[j].adjListWeight){
+            destination = v.connectedVertice - 1;
+            weight = v.weight;
+            if (distance[j] != __INT_MAX__ && distance[j] + weight < distance[destination]){
+                printf("Grafo contem clico negativo");
+                return;
+            }
+        }
+    }
+
+};
+
+void Grafos::BellmanFord(){
+
+    int distance[numVertices];
+
+    BellmanFord(0,distance);
+
+
+}

@@ -78,6 +78,12 @@ public:
   Grafos(string fileName, int type);
   ~Grafos();
   vector<Vertice> grafo;
+
+  int numGroup1;
+  int numGroup2;
+  vector<int> group1;
+  vector<int> group2;
+
   bool hasWeight;
   bool allPos = true;
   string filename;
@@ -119,6 +125,11 @@ public:
   void Print(); /*Imprime a estrutura do grafo, independente de qual for*/
   void PrintInformation(); /*Imprime informações sobre o grafo*/
 
+  bool isBipartite();
+
+  int maximumBipartiteMatching();
+
+  void BellmanFord();
 
 private:
 
@@ -133,6 +144,14 @@ private:
     list<int> *listVerticesforCC = NULL
   );
 /* BFSType 0 -> Normal BFS = 1; parada de vértice = 2 ; compenentes conexas = 3 */
+  
+  bool isBipartite(int initialVertice, int* color);
+
+  int indexNotVisited(int* color);
+
+  bool augment_path(int vertex, bool *visited, int *matched);
+
+  void BellmanFord(int initialVertice, int* distance);
 
   void DFSGenerica(
     int initialVertice,
