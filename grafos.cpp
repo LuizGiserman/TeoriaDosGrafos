@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Edge::Edge(int connectedVertice, int weight)
+Edge::Edge(int connectedVertice, float weight)
 {
     this->weight = weight;
     this->connectedVertice = connectedVertice;
@@ -436,6 +436,12 @@ void Grafos::Dijkstra (int initialVertice, vector <int> &father)
     Dijkstra (initialVertice, father, distance, secondVertice);
 }
 
+void Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance){
+    
+    int secondVertice = 0;
+    Dijkstra (initialVertice, father, distance, secondVertice );
+};
+
 
 /*Actual Dijkstra*/
 float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice)
@@ -500,39 +506,61 @@ float Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float>
 
 }
 
-void Grafos::Prim()
-{
-    vector <float> cost (numVertices, INFINITY);
+void Grafos::Prim(){
+    vector <float> cost;
+    vector<int> level;
+    vector<int> discover;
+    Prim(discover,cost,level);
 
+}
+
+void Grafos::Prim(vector<int> &discover){
+    vector<int> level;
+    vector <float> cost;
+    Prim(discover,cost,level);
+
+}
+
+void Grafos::Prim(vector<int> &discover, vector<float> &cost,vector<int> &level)
+{   
+    level.resize(numVertices,-1);
+    cost.resize(numVertices,INFINITY);
+    discover.resize(numVertices, -1);
     priority_queue < dist_vertice, vector<dist_vertice>, greater<dist_vertice> > distanceHeap;
+    vector<bool> marked (numVertices, false);
     int verticeID;
-
     distanceHeap.push(make_pair(0, 0));
+    discover[0] = 0;
     cost [0] = 0;
+    level[0] = 0;
     unsigned totalCost = 0;
 
     while (!distanceHeap.empty())
     {
         verticeID = distanceHeap.top().second;
         distanceHeap.pop();
-
+        marked[verticeID] = true;
         /*para cada vizinho v de u faça*/
         for (auto const &v: grafo[verticeID].adjListWeight)
         {
             /*Se custo[v] > w((u,v)) então*/
-            if (cost[v.connectedVertice - 1] > v.weight)
+            if ( (cost[v.connectedVertice - 1] > v.weight) && (marked[v.connectedVertice -1] == false) )
             {
                 cost[v.connectedVertice - 1] = v.weight;
-                cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
+                discover[v.connectedVertice - 1] = verticeID+1;
+                level[v.connectedVertice-1] = level[verticeID] + 1;
+                // cout << "Cost " << v.connectedVertice << " = " << cost[v.connectedVertice -1] << endl;
                 distanceHeap.push(make_pair(cost[v.connectedVertice - 1], v.connectedVertice - 1));
             }
         }
 
     }
 
+    
+
     for (auto const &v: cost)
     {
-        cout << "v: " << v << endl;
+        // cout << "v: " << v << endl;
         if (v != INFINITY)
             totalCost += v;
     }

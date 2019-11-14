@@ -1,3 +1,0 @@
-FileName: grafoteste2.txt
-e bipartido? 1
-Maximum Matching4
