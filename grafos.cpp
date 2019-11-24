@@ -976,28 +976,8 @@ int Grafos::indexNotVisited(vector<int> color){
     }
 
     return numVertices;
-
 }
 
-int Grafos::maximumBipartiteMatching(){
-
-    vector<int> matched;
-    vector<bool> visited;
-    int max_matching = 0;
-    int i;
-
-    matched.resize(numVertices, -1);
-    visited.resize(numVertices);
-    for (auto const &v: group1)
-        if (matched[v] == -1)
-        {
-            visited.assign(numVertices, false);
-            if (augment_path(v,visited,matched))
-                max_matching++;
-        }
-
-    return max_matching;
-}
 
 bool Grafos::HasAugmentingPath (vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist)
 {
@@ -1005,15 +985,15 @@ bool Grafos::HasAugmentingPath (vector<int> &pairG1, vector<int> &pairG2, vector
         int auxVertice;
         int g1;
         /*setup*/
-        for (g1=1; g1 <=numGroup1; g1++)
+        for (auto const &g1: group1)
         {
-            if (pairG1[g1] == NIL)
+            if (pairG1[g1+1] == NIL)
             {
-                dist[g1] = 0;
-                auxQ.push(g1);
+                dist[g1+1] = 0;
+                auxQ.push(g1+1);
             }
             else
-                dist[g1] = INFINITY;
+                dist[g1+1] = INFINITY;
         }
 
         dist[NIL] = INFINITY;
@@ -1024,7 +1004,7 @@ bool Grafos::HasAugmentingPath (vector<int> &pairG1, vector<int> &pairG2, vector
             auxQ.pop();
 
             if(dist[auxVertice] < dist[NIL])
-                for(auto const &viz: grafo[auxVertice].adjList)
+                for(auto const &viz: grafo[auxVertice-1].adjList)
                     if(dist[pairG2[viz]] == INFINITY)
                     {
                         dist[pairG2[viz]] = dist[auxVertice] + 1;
@@ -1032,7 +1012,7 @@ bool Grafos::HasAugmentingPath (vector<int> &pairG1, vector<int> &pairG2, vector
                     }
         }
 
-        return (dist[0] != INFINITY);
+        return (dist[NIL] != INFINITY);
 }
 
 void Grafos::HopcroftKarp()
@@ -1050,24 +1030,25 @@ void Grafos::HopcroftKarp()
 
     while(HasAugmentingPath(pairG1, pairG2, dist))
     {
-        for (index = 0; index < numGroup1; index++)
-            if ((pairG1[index]==NIL) && AugmentStartingAt(index, pairG1, pairG2, dist))
+        for (auto const &index: group1)
+            if ((pairG1[index+1]==NIL) && AugmentStartingAt(index+1, pairG1, pairG2, dist))
                 maxMatching++;
     }
 
+    // for (auto const &g1: group1)
+    // {
+    //     if(pairG1[g1+1] != NIL)
+    //         cout << g1+1 << "--" << pairG1[g1+1] << endl;
+    // }
     cout << "MaxMatching: " << maxMatching << endl;
-    for (g1 = 1; g1 <= numGroup1; g1++)
-    {
-        if(pairG1[g1] != NIL)
-            cout << g1+1 << "--" << pairG1[g1] << endl;
-    }
+
 }
 
 bool Grafos::AugmentStartingAt (int initialVertice, vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist)
 {
     if (initialVertice != NIL)
     {
-        for (auto const &viz: grafo[initialVertice].adjList)
+        for (auto const &viz: grafo[initialVertice-1].adjList)
         {
             if(dist[pairG2[viz]] == dist[initialVertice] + 1)
                 if(AugmentStartingAt(pairG2[viz], pairG1, pairG2, dist) == true)
@@ -1084,39 +1065,6 @@ bool Grafos::AugmentStartingAt (int initialVertice, vector<int> &pairG1, vector<
 }
 
 
-bool Grafos::augment_path(int vertex, vector<bool> &visited, vector<int> &matched) {
-
-  visited[vertex] = true;
-  int neighbour;
-
-  for (auto const &v: grafo[vertex].adjList)
-   {
-    neighbour = v - 1;
-    if (visited[neighbour] == true) {
-      continue;
-    }
-
-    if (matched[neighbour] == -1)
-    {
-      matched[vertex] = neighbour;
-      matched[neighbour] = vertex;
-      return true;
-    }
-     else if (matched[neighbour] != vertex)
-     {
-
-      visited[neighbour] = true;
-      if (augment_path(matched[neighbour],visited, matched))
-      {
-        matched[vertex] = neighbour;
-        matched[neighbour] = vertex;
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
 void Grafos::GetInformation() {
     vector<int> degrees;
     int degree;

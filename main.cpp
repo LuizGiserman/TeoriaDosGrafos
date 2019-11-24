@@ -47,19 +47,28 @@ int main(int argc, char *argv[]){
    file << "Resident set size: " << rss << endl;
    file << "VM: " << vm << endl;
 
+   string name;
+   for (int count=1; count <= 10; count++)
+   {
+       name = "grafo_teste_" + to_string(count) + ".txt";
+       {
+           Grafos grafo = Grafos(name, LIST_TYPE, argv[1]);
+           cout << name;
+           grafo.isBipartite();
+           start = std::chrono::steady_clock::now();
+           grafo.HopcroftKarp();
+           end = std::chrono::steady_clock::now();
+           cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
+       }
+   }
 
 
-   Grafos grafo = Grafos("exemplo.txt", LIST_TYPE, argv[1]);
-   grafo.isBipartite();
-   cout << "done Bipartite" << endl;
-   grafo.HopcroftKarp();
-   cout << "done hop" << endl;
      // {
      //     Grafos grafo = Grafos("ER_50.txt", LIST_TYPE, argv[1]);
      //     cout << "Grafo: " << grafo.filename << endl;
      //     grafo.BellmanFord();
      // }
-
+     //
      // {
      //     Grafos grafo = Grafos("ER_100.txt", LIST_TYPE, argv[1]);
      //     cout << "Grafo: " << grafo.filename << endl;

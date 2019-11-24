@@ -134,9 +134,7 @@ public:
   void PrintInformation(); /*Imprime informações sobre o grafo*/
 
   bool isBipartite();
-
-  int maximumBipartiteMatching();
-
+  
   void HopcroftKarp();
 
   void BellmanFord();
@@ -158,8 +156,6 @@ private:
   bool isBipartite(int initialVertice, vector<int> &color);
 
   int indexNotVisited(vector<int> color);
-
-  bool augment_path(int vertex, vector<bool> &visited, vector<int> &matched);
 
   bool HasAugmentingPath(vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist);
 
