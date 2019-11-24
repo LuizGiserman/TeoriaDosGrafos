@@ -6,7 +6,7 @@
 #include <time.h>
 #include "grafos.h"
 
-
+#define ARGC_TOTAL      2
 using namespace std;
 
 void process_mem_usage(double& vm_usage, double& resident_set)
@@ -30,7 +30,7 @@ void process_mem_usage(double& vm_usage, double& resident_set)
     resident_set = rss * page_size_kb;
 }
 
-int main(){
+int main(int argc, char *argv[]){
 
    std::chrono::steady_clock::time_point start;
    std::chrono::steady_clock::time_point end;
@@ -40,13 +40,20 @@ int main(){
    file.open("./result.txt");
   /*as_graph*/
 
-     Grafos grafo = Grafos("grafoteste2.txt", LIST_TYPE);
-     file << "FileName: " << grafo.filename << endl;
-     bool isbipartite = grafo.isBipartite();
-     file << "e bipartido? " << isbipartite << endl;
-     if (isbipartite){
-       file << "Maximum Matching" << grafo.maximumBipartiteMatching() << endl;
-     }
+    if (argc != ARGC_TOTAL)
+        argv[1] = NULL;
+
+
+     Grafos grafo = Grafos("exemplo.txt", LIST_TYPE, argv[1]);
+     cout << "criou grafo" <<endl;
+     grafo.Print();
+     grafo.BellmanFord();
+     // file << "FileName: " << grafo.filename << endl;
+     // bool isbipartite = grafo.isBipartite();
+     // file << "e bipartido? " << isbipartite << endl;
+     // if (isbipartite){
+     //   file << "Maximum Matching" << grafo.maximumBipartiteMatching() << endl;
+     // }
 
      file.close();
 

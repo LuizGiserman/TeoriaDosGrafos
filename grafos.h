@@ -26,7 +26,9 @@
 
 #define LIST_TYPE               0
 #define MATRIX_TYPE             1
-
+#define DAG                     "dir"
+#define CICLO_NEGATIVO          false
+#define OK                      true
 
 
 typedef unsigned char BYTE;
@@ -36,7 +38,7 @@ using namespace std;
 class Edge
 {
     public:
-    Edge(int connectedVertice, int weight);
+    Edge(int connectedVertice, float weight);
     int connectedVertice;
     float weight = 1;
 };
@@ -75,7 +77,7 @@ class Grafos
 {
 
 public:
-  Grafos(string fileName, int type);
+  Grafos(string fileName, int type, char *dir=NULL);
   ~Grafos();
   vector<Vertice> grafo;
 
@@ -84,6 +86,7 @@ public:
   vector<int> group1;
   vector<int> group2;
 
+  bool isDAG = false;
   bool hasWeight;
   bool allPos = true;
   string filename;
@@ -116,9 +119,14 @@ public:
   /*Overload: return fathers*/
   void Dijkstra (int initialVertice, vector <int> &father);
 
+  void Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance);
+
   float Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance, int secondVertice);
 
   void Prim ();
+  void Prim (vector<int> &discover);
+  void Prim (vector<int> &discover, vector<float> &cost, vector<int> &level);
+
   void PrintAllPaths (int initialVertice);
 
   /*funções auxiliares*/
@@ -135,7 +143,7 @@ private:
 
   void BFSGenerica(
     int initialVertice,
-    int **BFSinfo,
+    vector<vector<int>> &BFSinfo,
     Components *auxComponent = NULL,
     int BFStype = 0,
     int StopVertice = 0,
@@ -149,9 +157,9 @@ private:
 
   int indexNotVisited(int* color);
 
-  bool augment_path(int vertex, bool *visited, int *matched);
+  bool augment_path(int vertex, vector<bool> &visited, vector<int> &matched);
 
-  void BellmanFord(int initialVertice, int* distance);
+  bool BellmanFord(int initialVertice, vector<int> &distance);
 
   void DFSGenerica(
     int initialVertice,

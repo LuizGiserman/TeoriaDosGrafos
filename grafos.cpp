@@ -112,12 +112,13 @@ bool compare(const Components &comp1, const Components &comp2){
 /************************************************************/
 
 /*Constructor function*/
-Grafos::Grafos(std::string fileName, int type){
-
+Grafos::Grafos(std::string fileName, int type, char *dir){
     this->filename = fileName;
-
     // if 0 is an Adjacency List, if 1 is a Adjacency Matrix
     this->type = type;
+    if(dir != NULL)
+        if (dir == DAG)
+            this->isDAG = true;
 
     Grafos::Populate();
 };
@@ -154,7 +155,7 @@ void Grafos::Print(){
 /***/
  };
 
-void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxComponent, int BFStype /*=0*/, int stopVertice/*=0*/, int *diameter /*=0*/,std::list<int>::iterator *arrayPointer/* = {}*/, list<int> *listVerticesforCC/*= {0}*/)
+void Grafos::BFSGenerica(int initialVertice, vector<vector<int>> &bfsInfo, Components *auxComponent, int BFStype /*=0*/, int stopVertice/*=0*/, int *diameter /*=0*/,std::list<int>::iterator *arrayPointer/* = {}*/, list<int> *listVerticesforCC/*= {0}*/)
  {
      vector < bitset<1> > matrixVertices;
      vector<int> listVertices;
@@ -164,18 +165,14 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
      if (diameter != NULL)
        *diameter = 0;
 
+    bfsInfo.resize(3);
+    bfsInfo[0].resize(numVertices, 0);
+    bfsInfo[1].resize(numVertices, -1);
+    bfsInfo[2].resize(numVertices, -1);
 
-    for (int i = 0; i < numVertices; ++i)
-    {
-        bfsInfo[i] = new int[READINGS_SPT + 1]; // [0] marcado || nao marcado // [1] pai // [2] nivel na arvore
-        bfsInfo[i][0] = 0;               // 0 é nao marcado || 1 é marcado
-        bfsInfo[i][1] = -1; // numVertices + 1 will be treat like infinity
-        bfsInfo[i][2] = -1; // numVertices + 1 will be treat like infinity
-    }
-
-    bfsInfo[initialVertice - 1][0] = 1; // initialVertice marked
-    bfsInfo[initialVertice - 1][1] = 0; // root
-    bfsInfo[initialVertice - 1][2] = 0; // no father
+    bfsInfo[0][initialVertice - 1] = 1; // initialVertice marked
+    bfsInfo[1][initialVertice - 1] = 0; // root
+    bfsInfo[2][initialVertice - 1] = 0; // no father
 
     auxQueue.push(initialVertice); // initialVertice first element of list
 
@@ -197,19 +194,19 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
             listVertices = grafo[auxVertice-1].adjList;
             for(auto const &it : listVertices)
             {
-                if(bfsInfo[it - 1][0] == 0)
+                if(bfsInfo[0][it - 1] == 0)
                 {
                     //Mark Vertice
-                    bfsInfo[it - 1][0] = 1;
+                    bfsInfo[0][it - 1] = 1;
                     //Define Level of the father as the level of father plus 1
-                    bfsInfo[it - 1][1] = bfsInfo[auxVertice-1][1] + 1;
+                    bfsInfo[1][it - 1] = bfsInfo[1][auxVertice-1] + 1;
                     // Define Vertice as father
-                    bfsInfo[it - 1][2] = auxVertice;
+                    bfsInfo[2][it - 1] = auxVertice;
                     auxQueue.push(it);
                     if(diameter != NULL)
                     {
-                        if(*diameter < bfsInfo[it -1][1])
-                            *diameter = bfsInfo[it -1][1];
+                        if(*diameter < bfsInfo[1][it -1])
+                            *diameter = bfsInfo[1][it -1];
                     }
 
                 }
@@ -223,19 +220,19 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
             {
                 if(matrixVertices[i] == 1)
                 {
-                    if(bfsInfo[i][0] == 0)
+                    if(bfsInfo[0][i] == 0)
                     {
                         //Mark Vertice
-                        bfsInfo[i][0] = 1;
+                        bfsInfo[0][i] = 1;
                         //Define Level of the father as the level of father plus 1
-                        bfsInfo[i][1] = bfsInfo[auxVertice-1][1] + 1;
+                        bfsInfo[1][i] = bfsInfo[1][auxVertice-1] + 1;
                         // Define Vertice as father
-                        bfsInfo[i][2] = auxVertice;
+                        bfsInfo[2][i] = auxVertice;
                         auxQueue.push(i + 1);
 
                         if(diameter != NULL)
-                            if(*diameter < bfsInfo[i][1])
-                                *diameter = bfsInfo[i][1];
+                            if(*diameter < bfsInfo[1][i])
+                                *diameter = bfsInfo[1][i];
                     }
                 }
             }
@@ -253,7 +250,7 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
  void Grafos::BFS(int initialVertice, int search)
  {
 
-     int** bfsInfo = new int* [numVertices];
+     vector<vector<int>> bfsInfo;
      ofstream file;
 
      BFSGenerica(initialVertice, bfsInfo);
@@ -265,15 +262,12 @@ void Grafos::BFSGenerica(int initialVertice, int** bfsInfo, Components *auxCompo
       file << "filename: " << filename << endl;
       file << "initialVertice: " << initialVertice << endl;
       file << "vertice\t father\t" << endl;
-      file << "10\t" << bfsInfo[10-1][2] << "\t" << endl;
-      file << "20\t" << bfsInfo[20-1][2] << "\t" << endl;
-      file << "30\t" << bfsInfo[30-1][2] << "\t" << endl;
+      file << "10\t" << bfsInfo[2][10-1] << "\t" << endl;
+      file << "20\t" << bfsInfo[2][20-1] << "\t" << endl;
+      file << "30\t" << bfsInfo[2][30-1] << "\t" << endl;
       file.close();
     }
 
-    for(int i = 0; i < numVertices; ++i)
-        delete[] bfsInfo[i];
-    delete[] bfsInfo;
  }
 
 
@@ -437,7 +431,7 @@ void Grafos::Dijkstra (int initialVertice, vector <int> &father)
 }
 
 void Grafos::Dijkstra (int initialVertice, vector <int> &father, vector <float> &distance){
-    
+
     int secondVertice = 0;
     Dijkstra (initialVertice, father, distance, secondVertice );
 };
@@ -511,7 +505,6 @@ void Grafos::Prim(){
     vector<int> level;
     vector<int> discover;
     Prim(discover,cost,level);
-
 }
 
 void Grafos::Prim(vector<int> &discover){
@@ -522,7 +515,7 @@ void Grafos::Prim(vector<int> &discover){
 }
 
 void Grafos::Prim(vector<int> &discover, vector<float> &cost,vector<int> &level)
-{   
+{
     level.resize(numVertices,-1);
     cost.resize(numVertices,INFINITY);
     discover.resize(numVertices, -1);
@@ -556,7 +549,7 @@ void Grafos::Prim(vector<int> &discover, vector<float> &cost,vector<int> &level)
 
     }
 
-    
+
 
     for (auto const &v: cost)
     {
@@ -578,7 +571,7 @@ void Grafos::GetDiameter(){
 
     int maxDiameter = 0;
     int diameter;
-    int** bfsInfo = new int* [numVertices];
+    vector<vector<int>> bfsInfo;
 
     for(int i = 0; i < numVertices; i++)
     {
@@ -589,16 +582,13 @@ void Grafos::GetDiameter(){
             maxDiameter = diameter;
 
         /*clear bfsInfo from previous iteration*/
-        memset(bfsInfo, 0, sizeof(bfsInfo[0][0]) * numVertices * (READINGS_SPT + 1));
+        bfsInfo.clear();
     }
         file.open(fileoutput);
         file << "filename: " << filename << endl;
         file << "The diameter of the Graph is " << maxDiameter << endl;
         file.close();
 
-    for(int i = 0; i < numVertices; ++i)
-        delete[] bfsInfo[i];
-    delete[] bfsInfo;
 }
 
 
@@ -611,7 +601,7 @@ void Grafos::ConnectedComponents(int search){
     int maxSize = 0;
     int minSize = numVertices;
     int auxVertice;
-    int** bfsInfo = new int* [numVertices];
+    vector<vector<int>> bfsInfo;
 
     std::list<int> listVerticesforCC;
     std::list<int>::iterator arrayPointer[numVertices]; /*holds the pointers to the listVerticesforCC vertices*/
@@ -681,7 +671,6 @@ void Grafos::ConnectedComponents(int search){
       file.close();
     }
 
-    delete [] bfsInfo;
  }
 
 void Grafos::Distance(int firstVertice, int secondVertice)
@@ -706,11 +695,11 @@ void Grafos::Distance(int firstVertice, int secondVertice)
     }
     else if(!hasWeight)
     {
-        int** bfsInfo = new int* [numVertices];
+        vector<vector<int>> bfsInfo;
         BFSGenerica(firstVertice, bfsInfo, NULL , 1, secondVertice, NULL, NULL, NULL);
         cout << "BFS from " << firstVertice << " to " << secondVertice << endl;
-        cout << "Distance:  " << bfsInfo[secondVertice - 1][1] << endl;
-        cout << "Father in Generator Tree:  "  << bfsInfo[secondVertice - 1][2] << endl;
+        cout << "Distance:  " << bfsInfo[1][secondVertice - 1] << endl;
+        cout << "Father in Generator Tree:  "  << bfsInfo[2][secondVertice - 1] << endl;
 
     }
 
@@ -738,7 +727,7 @@ void Grafos::PrintAllPaths (int initialVertice)
 {
     vector <int> father;
     int index, aux;
-    int **bfsInfo = new int* [numVertices];
+    vector<vector<int>> bfsInfo;
 
     if (hasWeight)
     {
@@ -763,14 +752,14 @@ void Grafos::PrintAllPaths (int initialVertice)
         BFSGenerica (initialVertice, bfsInfo);
         for (index = 0; index < numVertices; index++)
         {
-            aux = bfsInfo[index][2];
+            aux = bfsInfo[2][index];
             if (aux != -1)
             {
                 cout << "Path " << index + 1 << ":  " << index + 1 << "<-";
                 while (aux != initialVertice)
                 {
                     cout << aux << "<-";
-                    aux = bfsInfo[aux-1][2];
+                    aux = bfsInfo[2][aux-1];
                 }
                 cout << aux << endl;
             }
@@ -831,7 +820,8 @@ void Grafos::Populate()
                 if (auxWeight < 0)
                     allPos = false;
                 grafo[auxVertice1-1].setVertice(auxVertice2, auxWeight);
-                grafo[auxVertice2-1].setVertice(auxVertice1, auxWeight);
+                if (!isDAG)
+                    grafo[auxVertice2-1].setVertice(auxVertice1, auxWeight);
                 numEdges++;
             }
             while (file >> auxVertice1 >> auxVertice2 >> auxWeight);
@@ -841,8 +831,9 @@ void Grafos::Populate()
             do
             {
                 grafo[auxVertice1-1].setVertice(auxVertice2);
+                if(!isDAG)
                 grafo[auxVertice2-1].setVertice(auxVertice1);
-                numEdges++;
+                    numEdges++;
             } while(file >> auxVertice1 >> auxVertice2);
             break;
 
@@ -899,36 +890,38 @@ void Grafos::Populate()
 
 bool Grafos::isBipartite(int initialVertice, int* color){
 
-    color[initialVertice] = 1; 
+    color[initialVertice] = 1;
 
-    queue <int> q; 
-    q.push(initialVertice); 
-  
-    while (!q.empty()){ 
-        
-        int u = q.front(); 
-        q.pop(); 
+    queue <int> q;
+    q.push(initialVertice);
 
-        for(auto const &it : grafo[u].adjList) { 
-            if (color[it - 1] == -1) { 
-                color[it - 1] = 1 - color[u]; 
-                q.push(it - 1); 
-            } 
+    while (!q.empty()){
+
+        int u = q.front();
+        q.pop();
+
+        for(auto const &it : grafo[u].adjList) {
+            if (color[it - 1] == -1) {
+                color[it - 1] = 1 - color[u];
+                q.push(it - 1);
+            }
 
             else if (color[it - 1] == color[u]){
                 return false;
-            } 
-        } 
-    } 
-  
-    return true; 
+            }
+        }
+    }
+
+    return true;
 }
 
+/*Function checks if the graph is bipartite and, in  case it is,
+ *separate both groups in different vectors*/
 bool Grafos::isBipartite(){
 
-    int color[numVertices]; 
-    for (int i = 0; i < numVertices; ++i) 
-        color[i] = -1; 
+    int color[numVertices];
+    for (int i = 0; i < numVertices; ++i)
+        color[i] = -1;
 
 
     int i;
@@ -938,25 +931,27 @@ bool Grafos::isBipartite(){
         result = isBipartite(i,color);
         if(!result)
             return false;
-       i = indexNotVisited(color); 
+       i = indexNotVisited(color);
     };
 
     int numGroup1 = 0;
     int numGroup2 = 0;
     vector<int> group1;
     vector<int> group2;
+    group1.reserve(numVertices/2);
+    group2.reserve(numVertices/2);
 
     for(i = 0; i < numVertices; i++){
         if(color[i] == 0){
             numGroup1++;
             group1.push_back(i);
-        } 
+        }
           else
         {
             numGroup2++;
             group2.push_back(i);
         }
-        
+
     }
 
     this->numGroup1 = numGroup1;
@@ -966,6 +961,7 @@ bool Grafos::isBipartite(){
 
     return true;
 }
+
 
 int Grafos::indexNotVisited(int* color){
     int i;
@@ -982,50 +978,48 @@ int Grafos::indexNotVisited(int* color){
 
 int Grafos::maximumBipartiteMatching(){
 
-    int matched[numVertices];
-
-    bool visited[numVertices];
-
+    vector<int> matched;
+    vector<bool> visited;
     int max_matching = 0;
-
     int i;
 
-    for(i = 0; i < numVertices; i++){
-        matched[i] = -1;
-    }
-
-    for (auto const &v: group1) {
-        if (matched[v] == -1) {
-            for(i = 0; i < numVertices; i++){
-                visited[i] = false;
-            }
-            if (augment_path(v,visited,matched)) {
+    matched.resize(numVertices, -1);
+    visited.resize(numVertices);
+    for (auto const &v: group1)
+        if (matched[v] == -1)
+        {
+            visited.assign(numVertices, false);
+            if (augment_path(v,visited,matched))
                 max_matching++;
-            }
         }
-    }
 
     return max_matching;
 }
 
-bool Grafos::augment_path(int vertex, bool *visited, int *matched) {
-  
-  visited[vertex] = true;
+bool Grafos::augment_path(int vertex, vector<bool> &visited, vector<int> &matched) {
 
-  for (auto const &v: grafo[vertex].adjList){
-    int neighbour = v - 1;
+  visited[vertex] = true;
+  int neighbour;
+
+  for (auto const &v: grafo[vertex].adjList)
+   {
+    neighbour = v - 1;
     if (visited[neighbour] == true) {
       continue;
     }
 
-    if (matched[neighbour] == -1) {
+    if (matched[neighbour] == -1)
+    {
       matched[vertex] = neighbour;
       matched[neighbour] = vertex;
       return true;
-    } else if (matched[neighbour] != vertex) {
+    }
+     else if (matched[neighbour] != vertex)
+     {
 
       visited[neighbour] = true;
-      if (augment_path(matched[neighbour],visited, matched)) {
+      if (augment_path(matched[neighbour],visited, matched))
+      {
         matched[vertex] = neighbour;
         matched[neighbour] = vertex;
         return true;
@@ -1066,58 +1060,81 @@ void Grafos::GetInformation() {
 
 };
 
-void Grafos::BellmanFord(int initialVertice, int* distance){
+/*Finds shortest path for every pair of vertices*/
+bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
+{
 
-    int i;
-    for(i = 0; i < numVertices; i++){
-        distance[i] = __INT_MAX__;
-    }
-    
+    distance.resize(numVertices, INFINITY);
     distance[initialVertice] = 0;
 
-    int j;
+    int i, j;
     int destination;
     int weight;
 
     bool tableUpdated;
 
-    for (i = 0; i < numVertices - 1; i++) {
-        tableUpdated = false;
-      for (j = 0; j < numVertices; i++) {
-        for (auto const &v: grafo[j].adjListWeight){
+    for (i = 0; i < numVertices - 1 + 1; i++)
+    {
+      tableUpdated = false;
+      for (j = 0; j < numVertices; j++)
+      {
+        for (auto const &v: grafo[j].adjListWeight)
+        {
+            // cout << "loop mais interno:" << v.connectedVertice -1 << "[" << i << "," << j << "]" << endl;
             destination = v.connectedVertice - 1;
             weight = v.weight;
-            if (distance[j] != __INT_MAX__ && distance[j] + weight < distance[destination]){
+            if (distance[j] != INFINITY && distance[j] + weight < distance[destination])
+            {
                 distance[destination] = distance[j] + weight;
-                if(!tableUpdated){
-                    tableUpdated = true;
-                }
+                tableUpdated = true;
             }
         }
       }
-      if(!tableUpdated){
-          break;
-      }
+      if(!tableUpdated)
+          return OK;
+      if(i == numVertices - 1 && tableUpdated)
+        return CICLO_NEGATIVO;
     }
-
-    for (i = 0; i < numVertices; i++) {
-        for (auto const &v: grafo[j].adjListWeight){
-            destination = v.connectedVertice - 1;
-            weight = v.weight;
-            if (distance[j] != __INT_MAX__ && distance[j] + weight < distance[destination]){
-                printf("Grafo contem clico negativo");
-                return;
-            }
-        }
-    }
-
-};
+    return OK;
+}
 
 void Grafos::BellmanFord(){
 
-    int distance[numVertices];
+    vector<int> auxDistance;
+    vector<vector<int>> distance;
+    int index;
+    int k = 0;
+    
+    distance.resize(numVertices);
 
-    BellmanFord(0,distance);
+
+    for (index = 0; index < numVertices; index++)
+    {
+        auxDistance.resize(numVertices);
+        if(BellmanFord(index,auxDistance) == CICLO_NEGATIVO)
+        {
+            cout << "Ciclo Negativo" << endl;
+            return;
+        }
+        distance.push_back(auxDistance);
+        auxDistance.clear();
+    }
+
+
+    for (index = 0; index < numVertices; index++)
+        cout << index+1 << "\t";
+    cout <<endl;
+    k = 0;
+    for (auto const &dist: distance)
+    {
+        // cout << k+1 << " ";
+        for (auto const &v: dist)
+        {
+            cout << v << "\t";
+        }
+        cout <<endl;
+        k++;
+    }
 
 
 }
