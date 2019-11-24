@@ -4,7 +4,6 @@
 * Disciplina: Teoria dos Grafos
 */
 #include <algorithm>
-#include "grafos.h"
 #include <bitset>
 #include <iostream>
 #include <string>
@@ -15,6 +14,11 @@
 #include <list>
 #include <fstream>
 #include <cstring>
+#include <unistd.h>
+#include <sys/timeb.h>
+#include <chrono>
+#include "grafos.h"
+
 
 using namespace std;
 
@@ -1063,8 +1067,7 @@ void Grafos::GetInformation() {
 /*Finds shortest path for every pair of vertices*/
 bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
 {
-
-    distance.resize(numVertices, INFINITY);
+    // distance.resize(numVertices, INFINITY);
     distance[initialVertice] = 0;
 
     int i, j;
@@ -1072,7 +1075,6 @@ bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
     int weight;
 
     bool tableUpdated;
-
     for (i = 0; i < numVertices - 1 + 1; i++)
     {
       tableUpdated = false;
@@ -1080,7 +1082,7 @@ bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
       {
         for (auto const &v: grafo[j].adjListWeight)
         {
-            // cout << "loop mais interno:" << v.connectedVertice -1 << "[" << i << "," << j << "]" << endl;
+            // cout << "entrou aqui" << endl;
             destination = v.connectedVertice - 1;
             weight = v.weight;
             if (distance[j] != INFINITY && distance[j] + weight < distance[destination])
@@ -1092,6 +1094,7 @@ bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
       }
       if(!tableUpdated)
           return OK;
+
       if(i == numVertices - 1 && tableUpdated)
         return CICLO_NEGATIVO;
     }
@@ -1103,38 +1106,28 @@ void Grafos::BellmanFord(){
     vector<int> auxDistance;
     vector<vector<int>> distance;
     int index;
+    std::chrono::steady_clock::time_point start;
+    std::chrono::steady_clock::time_point end;
     int k = 0;
-    
-    distance.resize(numVertices);
 
-
+    start = std::chrono::steady_clock::now();
     for (index = 0; index < numVertices; index++)
     {
-        auxDistance.resize(numVertices);
+        auxDistance.resize(numVertices, INFINITY);
         if(BellmanFord(index,auxDistance) == CICLO_NEGATIVO)
         {
             cout << "Ciclo Negativo" << endl;
+            end = std::chrono::steady_clock::now();
+            cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
             return;
         }
         distance.push_back(auxDistance);
+        k++;
         auxDistance.clear();
     }
+    end = std::chrono::steady_clock::now();
 
-
-    for (index = 0; index < numVertices; index++)
-        cout << index+1 << "\t";
-    cout <<endl;
-    k = 0;
-    for (auto const &dist: distance)
-    {
-        // cout << k+1 << " ";
-        for (auto const &v: dist)
-        {
-            cout << v << "\t";
-        }
-        cout <<endl;
-        k++;
-    }
-
+    cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
+    cout << "(1, 10): " << distance[0][9] << "\t(2, 20): " << distance[1][19] << "\t(3, 30): " << distance[2][29] << endl;
 
 }
