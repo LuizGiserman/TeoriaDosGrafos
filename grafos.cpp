@@ -117,12 +117,14 @@ bool compare(const Components &comp1, const Components &comp2){
 
 /*Constructor function*/
 Grafos::Grafos(std::string fileName, int type, char *dir){
-    this->filename = fileName;
-    // if 0 is an Adjacency List, if 1 is a Adjacency Matrix
-    this->type = type;
     if(dir != NULL)
-        if (dir == DAG)
+    {
+        string auxString(dir);
+        if (auxString == DAG)
             this->isDAG = true;
+    }
+    this->filename = fileName;
+    this->type = type;     // if 0 -> Adjacency List, if 1 -> Adjacency Matrix
 
     Grafos::Populate();
 };
@@ -892,7 +894,7 @@ void Grafos::Populate()
 
  }
 
-bool Grafos::isBipartite(int initialVertice, int* color){
+bool Grafos::isBipartite(int initialVertice, vector<int> &color){
 
     color[initialVertice] = 1;
 
@@ -923,10 +925,8 @@ bool Grafos::isBipartite(int initialVertice, int* color){
  *separate both groups in different vectors*/
 bool Grafos::isBipartite(){
 
-    int color[numVertices];
-    for (int i = 0; i < numVertices; ++i)
-        color[i] = -1;
-
+    vector<int> color;
+    color.resize(numVertices, -1);
 
     int i;
     bool result;
@@ -967,9 +967,8 @@ bool Grafos::isBipartite(){
 }
 
 
-int Grafos::indexNotVisited(int* color){
+int Grafos::indexNotVisited(vector<int> color){
     int i;
-
     for(i = 0; i < numVertices; i++){
         if (color[i] == -1){
             return i;
@@ -999,6 +998,91 @@ int Grafos::maximumBipartiteMatching(){
 
     return max_matching;
 }
+
+bool Grafos::HasAugmentingPath (vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist)
+{
+        queue<int> auxQ;
+        int auxVertice;
+        int g1;
+        /*setup*/
+        for (g1=1; g1 <=numGroup1; g1++)
+        {
+            if (pairG1[g1] == NIL)
+            {
+                dist[g1] = 0;
+                auxQ.push(g1);
+            }
+            else
+                dist[g1] = INFINITY;
+        }
+
+        dist[NIL] = INFINITY;
+
+        while(!auxQ.empty())
+        {
+            auxVertice = auxQ.front();
+            auxQ.pop();
+
+            if(dist[auxVertice] < dist[NIL])
+                for(auto const &viz: grafo[auxVertice].adjList)
+                    if(dist[pairG2[viz]] == INFINITY)
+                    {
+                        dist[pairG2[viz]] = dist[auxVertice] + 1;
+                        auxQ.push(pairG2[viz]);
+                    }
+        }
+
+        return (dist[0] != INFINITY);
+}
+
+void Grafos::HopcroftKarp()
+{
+    int index;
+    int maxMatching = 0;
+    vector<int> pairG1;
+    vector<int> pairG2;
+    vector<int> dist;
+    int g1;
+
+    pairG1.resize(numVertices + 1, NIL);
+    pairG2.resize(numVertices + 1, NIL);
+    dist.resize(numVertices + 1);
+
+    while(HasAugmentingPath(pairG1, pairG2, dist))
+    {
+        for (index = 0; index < numGroup1; index++)
+            if ((pairG1[index]==NIL) && AugmentStartingAt(index, pairG1, pairG2, dist))
+                maxMatching++;
+    }
+
+    cout << "MaxMatching: " << maxMatching << endl;
+    for (g1 = 1; g1 <= numGroup1; g1++)
+    {
+        if(pairG1[g1] != NIL)
+            cout << g1+1 << "--" << pairG1[g1] << endl;
+    }
+}
+
+bool Grafos::AugmentStartingAt (int initialVertice, vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist)
+{
+    if (initialVertice != NIL)
+    {
+        for (auto const &viz: grafo[initialVertice].adjList)
+        {
+            if(dist[pairG2[viz]] == dist[initialVertice] + 1)
+                if(AugmentStartingAt(pairG2[viz], pairG1, pairG2, dist) == true)
+                {
+                    pairG2[viz] = initialVertice;
+                    pairG1[initialVertice] = viz;
+                    return true;
+                }
+        }
+        dist[initialVertice] = INFINITY;
+        return false;
+    }
+    return true;
+}
+
 
 bool Grafos::augment_path(int vertex, vector<bool> &visited, vector<int> &matched) {
 

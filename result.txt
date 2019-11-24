@@ -1,2 +1,2 @@
-Resident set size: 1972
-VM: 14148
+Resident set size: 1964
+VM: 14152

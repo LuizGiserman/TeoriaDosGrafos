@@ -29,7 +29,7 @@
 #define DAG                     "dir"
 #define CICLO_NEGATIVO          false
 #define OK                      true
-
+#define NIL                     0
 
 typedef unsigned char BYTE;
 typedef std::pair< int, int> dist_vertice;
@@ -137,6 +137,8 @@ public:
 
   int maximumBipartiteMatching();
 
+  void HopcroftKarp();
+
   void BellmanFord();
 
 private:
@@ -153,13 +155,21 @@ private:
   );
 /* BFSType 0 -> Normal BFS = 1; parada de vértice = 2 ; compenentes conexas = 3 */
 
-  bool isBipartite(int initialVertice, int* color);
+  bool isBipartite(int initialVertice, vector<int> &color);
 
-  int indexNotVisited(int* color);
+  int indexNotVisited(vector<int> color);
 
   bool augment_path(int vertex, vector<bool> &visited, vector<int> &matched);
 
+  bool HasAugmentingPath(vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist);
+
+  bool AugmentStartingAt (int initialVertice, vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist);
+
+
+
   bool BellmanFord(int initialVertice, vector<int> &distance);
+
+
 
   void DFSGenerica(
     int initialVertice,

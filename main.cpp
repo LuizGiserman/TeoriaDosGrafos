@@ -48,35 +48,41 @@ int main(int argc, char *argv[]){
    file << "VM: " << vm << endl;
 
 
-     {
-         Grafos grafo = Grafos("ER_50.txt", LIST_TYPE, argv[1]);
-         cout << "Grafo: " << grafo.filename << endl;
-         grafo.BellmanFord();
-     }
 
-     {
-         Grafos grafo = Grafos("ER_100.txt", LIST_TYPE, argv[1]);
-         cout << "Grafo: " << grafo.filename << endl;
-         grafo.BellmanFord();
-     }
+   Grafos grafo = Grafos("exemplo.txt", LIST_TYPE, argv[1]);
+   grafo.isBipartite();
+   cout << "done Bipartite" << endl;
+   grafo.HopcroftKarp();
+   cout << "done hop" << endl;
+     // {
+     //     Grafos grafo = Grafos("ER_50.txt", LIST_TYPE, argv[1]);
+     //     cout << "Grafo: " << grafo.filename << endl;
+     //     grafo.BellmanFord();
+     // }
 
-     {
-         Grafos grafo = Grafos("ER_500.txt", LIST_TYPE, argv[1]);
-         cout << "Grafo: " << grafo.filename << endl;
-         grafo.BellmanFord();
-     }
-
-     {
-         Grafos grafo = Grafos("ER_1000.txt", LIST_TYPE, argv[1]);
-         cout << "Grafo: " << grafo.filename << endl;
-         grafo.BellmanFord();
-     }
-
-     {
-         Grafos grafo = Grafos("ER_1500.txt", LIST_TYPE, argv[1]);
-         cout << "Grafo: " << grafo.filename << endl;
-         grafo.BellmanFord();
-     }
+     // {
+     //     Grafos grafo = Grafos("ER_100.txt", LIST_TYPE, argv[1]);
+     //     cout << "Grafo: " << grafo.filename << endl;
+     //     grafo.BellmanFord();
+     // }
+     //
+     // {
+     //     Grafos grafo = Grafos("ER_500.txt", LIST_TYPE, argv[1]);
+     //     cout << "Grafo: " << grafo.filename << endl;
+     //     grafo.BellmanFord();
+     // }
+     //
+     // {
+     //     Grafos grafo = Grafos("ER_1000.txt", LIST_TYPE, argv[1]);
+     //     cout << "Grafo: " << grafo.filename << endl;
+     //     grafo.BellmanFord();
+     // }
+     //
+     // {
+     //     Grafos grafo = Grafos("ER_1500.txt", LIST_TYPE, argv[1]);
+     //     cout << "Grafo: " << grafo.filename << endl;
+     //     grafo.BellmanFord();
+     // }
 
      // file << "FileName: " << grafo.filename << endl;
      // bool isbipartite = grafo.isBipartite();
@@ -87,5 +93,5 @@ int main(int argc, char *argv[]){
 
      file.close();
 
-  return 0;
+  return OK;
 }
