@@ -901,23 +901,20 @@ bool Grafos::isBipartite(int initialVertice, vector<int> &color){
     queue <int> q;
     q.push(initialVertice);
 
-    while (!q.empty()){
-
+    while (!q.empty())
+    {
         int u = q.front();
         q.pop();
 
-        for(auto const &it : grafo[u].adjList) {
-            if (color[it - 1] == -1) {
+        for(auto const &it : grafo[u].adjList)
+            if (color[it - 1] == -1)
+            {
                 color[it - 1] = 1 - color[u];
                 q.push(it - 1);
             }
-
-            else if (color[it - 1] == color[u]){
+            else if (color[it - 1] == color[u])
                 return false;
-            }
-        }
     }
-
     return true;
 }
 
@@ -1023,6 +1020,8 @@ void Grafos::HopcroftKarp()
     vector<int> pairG2;
     vector<int> dist;
     int g1;
+    string fileN = filename + "_hopcroftKarp.txt";
+    ofstream file;
 
     pairG1.resize(numVertices + 1, NIL);
     pairG2.resize(numVertices + 1, NIL);
@@ -1035,13 +1034,15 @@ void Grafos::HopcroftKarp()
                 maxMatching++;
     }
 
-    // for (auto const &g1: group1)
-    // {
-    //     if(pairG1[g1+1] != NIL)
-    //         cout << g1+1 << "--" << pairG1[g1+1] << endl;
-    // }
-    cout << "MaxMatching: " << maxMatching << endl;
-
+    /*escrevendo em disco */
+    file.open(fileN);
+    for (auto const &g1: group1)
+    {
+        if(pairG1[g1+1] != NIL)
+            file << g1+1 << "--" << pairG1[g1+1] << "|\t";
+    }
+    file << endl << "MaxMatching: " << maxMatching << endl;
+    file.close();
 }
 
 bool Grafos::AugmentStartingAt (int initialVertice, vector<int> &pairG1, vector<int> &pairG2, vector<int> &dist)
@@ -1096,7 +1097,7 @@ void Grafos::GetInformation() {
 
 };
 
-/*Finds shortest path for every pair of vertices*/
+/*Finds shortest path from every vertice to initialVertice*/
 bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
 {
     distance[initialVertice] = 0;
@@ -1135,25 +1136,20 @@ void Grafos::BellmanFord(){
     int index;
     std::chrono::steady_clock::time_point start;
     std::chrono::steady_clock::time_point end;
-    int k = 0;
-    bool auxBool1 = !CICLO_NEGATIVO;
-    bool auxBool2 = !CICLO_NEGATIVO;
+    bool auxBool = !CICLO_NEGATIVO;
 
     start = std::chrono::steady_clock::now();
     for (index = 0; index < numVertices; index++)
     {
         auxDistance.resize(numVertices, INFINITY);
-        auxBool1 = BellmanFord(index,auxDistance);
-        if (auxBool1 == CICLO_NEGATIVO)
-            auxBool2 = auxBool1;
-
+        if(BellmanFord(index,auxDistance) == CICLO_NEGATIVO)
+            auxBool = CICLO_NEGATIVO;
         distance.push_back(auxDistance);
-        k++;
         auxDistance.clear();
     }
     end = std::chrono::steady_clock::now();
 
-    cout << "Ciclo negativo: " << auxBool2 <<endl;
+    cout << "Ciclo Negativo: " << auxBool << endl;
     cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
     cout << "(1, 10): " << distance[0][9] << "\t(2, 20): " << distance[1][19] << "\t(3, 30): " << distance[2][29] << endl;
 
