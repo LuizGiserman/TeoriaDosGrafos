@@ -47,52 +47,57 @@ int main(int argc, char *argv[]){
    file << "Resident set size: " << rss << endl;
    file << "VM: " << vm << endl;
 
-   string name;
-   for (int count=1; count <= 10; count++)
-   {
-       name = "grafo_teste_" + to_string(count) + ".txt";
-       {
-           Grafos grafo = Grafos(name, LIST_TYPE, argv[1]);
-           cout << name;
-           grafo.isBipartite();
-           start = std::chrono::steady_clock::now();
-           grafo.HopcroftKarp();
-           end = std::chrono::steady_clock::now();
-           cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
-       }
-   }
+   // string name;
+   // for (int count=1; count <= 10; count++)
+   // {
+   //     name = "grafo_teste_" + to_string(count) + ".txt";
+   //     {
+   //         Grafos grafo = Grafos(name, LIST_TYPE, argv[1]);
+   //         cout << name;
+   //         if (grafo.isBipartite())
+   //         {
+   //             cout << ": isBipartite!!" << endl;
+   //             start = std::chrono::steady_clock::now();
+   //             grafo.HopcroftKarp();
+   //             end = std::chrono::steady_clock::now();
+   //             cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
+   //         }
+   //         cout << " not Bipartite :( " << endl;
+   //     }
+   //     cout << endl;
+   // }
 
 
-     // {
-     //     Grafos grafo = Grafos("ER_50.txt", LIST_TYPE, argv[1]);
-     //     cout << "Grafo: " << grafo.filename << endl;
-     //     grafo.BellmanFord();
-     // }
-     //
-     // {
-     //     Grafos grafo = Grafos("ER_100.txt", LIST_TYPE, argv[1]);
-     //     cout << "Grafo: " << grafo.filename << endl;
-     //     grafo.BellmanFord();
-     // }
-     //
-     // {
-     //     Grafos grafo = Grafos("ER_500.txt", LIST_TYPE, argv[1]);
-     //     cout << "Grafo: " << grafo.filename << endl;
-     //     grafo.BellmanFord();
-     // }
-     //
-     // {
-     //     Grafos grafo = Grafos("ER_1000.txt", LIST_TYPE, argv[1]);
-     //     cout << "Grafo: " << grafo.filename << endl;
-     //     grafo.BellmanFord();
-     // }
-     //
-     // {
-     //     Grafos grafo = Grafos("ER_1500.txt", LIST_TYPE, argv[1]);
-     //     cout << "Grafo: " << grafo.filename << endl;
-     //     grafo.BellmanFord();
-     // }
+     {
+         Grafos grafo = Grafos("ER_50.txt", LIST_TYPE, argv[1]);
+         cout << "Grafo: " << grafo.filename << endl;
+         grafo.BellmanFord();
+     }
 
+     {
+         Grafos grafo = Grafos("ER_100.txt", LIST_TYPE, argv[1]);
+         cout << "Grafo: " << grafo.filename << endl;
+         grafo.BellmanFord();
+     }
+
+     {
+         Grafos grafo = Grafos("ER_500.txt", LIST_TYPE, argv[1]);
+         cout << "Grafo: " << grafo.filename << endl;
+         grafo.BellmanFord();
+     }
+
+     {
+         Grafos grafo = Grafos("ER_1000.txt", LIST_TYPE, argv[1]);
+         cout << "Grafo: " << grafo.filename << endl;
+         grafo.BellmanFord();
+     }
+
+     {
+         Grafos grafo = Grafos("ER_1500.txt", LIST_TYPE, argv[1]);
+         cout << "Grafo: " << grafo.filename << endl;
+         grafo.BellmanFord();
+     }
+     // 
      // file << "FileName: " << grafo.filename << endl;
      // bool isbipartite = grafo.isBipartite();
      // file << "e bipartido? " << isbipartite << endl;

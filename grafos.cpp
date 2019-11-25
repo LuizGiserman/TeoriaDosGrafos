@@ -1099,22 +1099,18 @@ void Grafos::GetInformation() {
 /*Finds shortest path for every pair of vertices*/
 bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
 {
-    // distance.resize(numVertices, INFINITY);
     distance[initialVertice] = 0;
-
     int i, j;
     int destination;
     int weight;
-
     bool tableUpdated;
+
     for (i = 0; i < numVertices - 1 + 1; i++)
     {
       tableUpdated = false;
       for (j = 0; j < numVertices; j++)
-      {
         for (auto const &v: grafo[j].adjListWeight)
         {
-            // cout << "entrou aqui" << endl;
             destination = v.connectedVertice - 1;
             weight = v.weight;
             if (distance[j] != INFINITY && distance[j] + weight < distance[destination])
@@ -1123,7 +1119,6 @@ bool Grafos::BellmanFord(int initialVertice, vector<int> &distance)
                 tableUpdated = true;
             }
         }
-      }
       if(!tableUpdated)
           return OK;
 
@@ -1141,24 +1136,24 @@ void Grafos::BellmanFord(){
     std::chrono::steady_clock::time_point start;
     std::chrono::steady_clock::time_point end;
     int k = 0;
+    bool auxBool1 = !CICLO_NEGATIVO;
+    bool auxBool2 = !CICLO_NEGATIVO;
 
     start = std::chrono::steady_clock::now();
     for (index = 0; index < numVertices; index++)
     {
         auxDistance.resize(numVertices, INFINITY);
-        if(BellmanFord(index,auxDistance) == CICLO_NEGATIVO)
-        {
-            cout << "Ciclo Negativo" << endl;
-            end = std::chrono::steady_clock::now();
-            cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
-            return;
-        }
+        auxBool1 = BellmanFord(index,auxDistance);
+        if (auxBool1 == CICLO_NEGATIVO)
+            auxBool2 = auxBool1;
+
         distance.push_back(auxDistance);
         k++;
         auxDistance.clear();
     }
     end = std::chrono::steady_clock::now();
 
+    cout << "Ciclo negativo: " << auxBool2 <<endl;
     cout << "Tempo de execucao: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "µs | " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()/1000.0 << "ms" << endl;
     cout << "(1, 10): " << distance[0][9] << "\t(2, 20): " << distance[1][19] << "\t(3, 30): " << distance[2][29] << endl;
 
